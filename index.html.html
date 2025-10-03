@@ -1,0 +1,3714 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mining Optimization & Zero-Harm Dashboard (v4 — fixed)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <style>
+      body {
+        background: #f6f8f7;
+      }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        width: 260px;
+        padding: 1rem;
+        background: #246b3b;
+        color: #fff;
+        overflow-y: auto;
+      }
+      .sidebar a {
+        color: #e8f5ed;
+        text-decoration: none;
+        display: block;
+        padding: 0.5rem 0.75rem;
+        border-radius: 0.5rem;
+      }
+      .sidebar a.active,
+      .sidebar a:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .main {
+        margin-left: 260px;
+        padding: 1.25rem;
+      }
+      .section-card {
+        border-radius: 0.75rem;
+      }
+      .pill {
+        font-size: 0.8rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 999px;
+      }
+      .checkgrid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 0.35rem 0.75rem;
+      }
+      @media (max-width: 991px) {
+        .checkgrid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+      .thumb {
+        width: 100%;
+        max-width: 240px;
+        border: 1px solid #ddd;
+        border-radius: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="d-flex align-items-center mb-3">
+        <img src="https://via.placeholder.com/48x48" class="rounded-circle me-2" alt="" />
+        <div>
+          <div class="fw-bold">Founder Dashboard</div>
+          <small>Mining Ops Suite</small>
+        </div>
+      </div>
+      <nav class="mb-3">
+        <div class="text-uppercase small mb-2 opacity-75">Navigation</div>
+        <a class="active" href="#home">Home</a>
+        <a href="#pdm">Predictive Maintenance</a>
+        <a href="#security">Security / Intrusion</a>
+        <a href="#water">Energy & Water</a>
+        <a href="#hse">Safety & Hazards</a>
+        <a href="#frag">Fragmentation</a>
+        <a href="#maint">Control-Room Maintenance</a>
+      </nav>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <h2 class="fw-bold mb-3">FOUNDER DASHBOARD</h2>
+
+      <!-- =================== PDM =================== -->
+      <div id="pdm" class="mb-4">
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-gear-wide-connected me-1"></i>
+            Predictive Maintenance
+          </div>
+          <div class="card-body">
+            <form id="formPDM" class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label">Equipment ID</label>
+                <input class="form-control" name="equip_id" placeholder="PUMP-12-06" required />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Asset Class</label>
+                <select class="form-select" name="asset_class">
+                  <option>Pump</option>
+                  <option>Fan</option>
+                  <option>Conveyor</option>
+                  <option>Crusher</option>
+                  <option>Hoist</option>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Sensors</label>
+                <div class="checkgrid">
+                  <label>
+                    <input type="checkbox" name="sensors" value="Vibration" checked />
+                    Vibration
+                  </label>
+                  <label>
+                    <input type="checkbox" name="sensors" value="Temperature" checked />
+                    Temperature
+                  </label>
+                  <label>
+                    <input type="checkbox" name="sensors" value="Pressure" />
+                    Pressure
+                  </label>
+                  <label>
+                    <input type="checkbox" name="sensors" value="Acoustic" />
+                    Acoustic
+                  </label>
+                  <label>
+                    <input type="checkbox" name="sensors" value="Current/Power" checked />
+                    Current/Power
+                  </label>
+                  <label>
+                    <input type="checkbox" name="sensors" value="Run Hours" />
+                    Run Hours
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Alert Channels</label>
+                <div class="checkgrid">
+                  <label>
+                    <input type="checkbox" name="alerts" value="In-app" checked />
+                    In-app
+                  </label>
+                  <label>
+                    <input type="checkbox" name="alerts" value="Email" checked />
+                    Email
+                  </label>
+                  <label>
+                    <input type="checkbox" name="alerts" value="SMS" />
+                    SMS
+                  </label>
+                  <label>
+                    <input type="checkbox" name="alerts" value="Radio/PA" />
+                    Radio/PA
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success">Run Prediction</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header">Historical Results</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Equipment</th>
+                    <th>Finding</th>
+                    <th>RUL</th>
+                    <th>WO</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblPDM"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-header">Latest Output</div>
+          <div class="card-body">
+            <div id="outPDM" class="mb-3 text-muted">Submit to see predicted failure and KPIs.</div>
+            <div class="row g-3">
+              <div class="col-lg-6"><canvas id="chartPdmRUL" height="140"></canvas></div>
+              <div class="col-lg-6"><canvas id="chartPdmVib" height="140"></canvas></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Remote Monitoring -->
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-broadcast-pin me-1"></i>
+            Remote Monitoring
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="me-3">
+                <input class="form-check-input me-1" type="radio" name="pdmRmMode" value="sim" checked />
+                Simulator
+              </label>
+              <label class="me-3">
+                <input class="form-check-input me-1" type="radio" name="pdmRmMode" value="mqtt" />
+                MQTT
+              </label>
+              <label>
+                <input class="form-check-input me-1" type="radio" name="pdmRmMode" value="opcua" />
+                OPC-UA
+              </label>
+            </div>
+            <form id="formPdmRm" class="row g-2">
+              <div class="col-md-3">
+                <label class="form-label">Gateway / Client ID</label>
+                <input class="form-control" name="gw" placeholder="EDGE-001" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Broker / Endpoint</label>
+                <input
+                  class="form-control"
+                  name="endpoint"
+                  placeholder="mqtts://broker:8883  or  opc.tcp://host:4840" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Poll / Push Interval (s)</label>
+                <input type="number" class="form-control" name="interval" value="5" min="2" />
+              </div>
+              <div class="col-md-2 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success" id="btnPdmRmConnect" type="submit">
+                  <i class="bi bi-link-45deg"></i>
+                  Connect
+                </button>
+              </div>
+              <div class="col-12">
+                <div class="checkgrid">
+                  <label>
+                    <input type="checkbox" name="rmSensors" value="Vibration" checked />
+                    Vibration
+                  </label>
+                  <label>
+                    <input type="checkbox" name="rmSensors" value="Temperature" checked />
+                    Temperature
+                  </label>
+                  <label>
+                    <input type="checkbox" name="rmSensors" value="Current" checked />
+                    Current
+                  </label>
+                  <label>
+                    <input type="checkbox" name="rmSensors" value="Pressure" />
+                    Pressure
+                  </label>
+                  <label>
+                    <input type="checkbox" name="rmSensors" value="RunHours" />
+                    Run Hours
+                  </label>
+                  <label>
+                    <input type="checkbox" name="rmSensors" value="Oil" />
+                    Oil (viscosity/particles)
+                  </label>
+                </div>
+                <div class="small text-muted">
+                  Follows ISO 17359 guidance on condition parameters. Connection normalises MQTT/OPC-UA tag names.
+                </div>
+              </div>
+            </form>
+            <div class="mt-2 small" id="pdmRmStatus">
+              <span class="pill bg-secondary text-white">Disconnected</span>
+              · ready
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header">Remote Telemetry — History</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date/Time</th>
+                    <th>Asset</th>
+                    <th>Sensor</th>
+                    <th>Value</th>
+                    <th>Health</th>
+                    <th>WO</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblPdmRm"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-header">Remote Monitoring — Live Output</div>
+          <div class="card-body">
+            <div id="outPdmRm" class="mb-2 text-muted">Click Connect to start streaming (simulator by default).</div>
+            <div class="row g-3">
+              <div class="col-lg-6">
+                <canvas id="chartPdmRmVib" height="140"></canvas>
+                <div class="small text-muted mt-1">
+                  Vibration RMS (mm/s) · uses trend + kurtosis cue for early bearing faults.
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <canvas id="chartPdmRmHealth" height="140"></canvas>
+                <div class="small text-muted mt-1">
+                  Composite Health Index (0–100) from vibration, temperature, current & oil flags.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image-based Optimizer -->
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-image me-1"></i>
+            Maintenance Optimizer — Visual (Image)
+          </div>
+          <div class="card-body">
+            <form id="formPdmImg" class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label">Asset Class</label>
+                <select class="form-select" name="img_asset_class">
+                  <option>Pump</option>
+                  <option>Fan</option>
+                  <option>Conveyor</option>
+                  <option>Crusher</option>
+                  <option>Hoist</option>
+                </select>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Detection Classes (toggle)</label>
+                <div class="checkgrid">
+                  <label>
+                    <input type="checkbox" name="img_classes" value="leak" checked />
+                    Leak/Oil stain
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="corrosion" checked />
+                    Corrosion/Rust
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="crack" checked />
+                    Crack/Fracture
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="loose" checked />
+                    Loose/Missing Fastener
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="misalign" checked />
+                    Misalignment
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="overheat" checked />
+                    Hotspot/Overheating
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="belt" checked />
+                    Belt/Chain Wear
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="guard" checked />
+                    Broken/Missing Guard
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="seal" checked />
+                    Seal/Coupling Wear
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="idler" checked />
+                    Idler/Pulley Damage
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="impeller" checked />
+                    Impeller/Blade Damage
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="cavitation" checked />
+                    Cavitation Pitting
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="blockage" checked />
+                    Chute/Screen Blockage
+                  </label>
+                  <label>
+                    <input type="checkbox" name="img_classes" value="dust" checked />
+                    Dust Build-up (vents)
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-9">
+                <label class="form-label">Asset Image</label>
+                <input type="file" class="form-control" id="imgInput" accept="image/*" required />
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success" type="submit">
+                  <i class="bi bi-search"></i>
+                  Analyze Image
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header">Image Inspections — History</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date/Time</th>
+                    <th>Asset</th>
+                    <th>Findings</th>
+                    <th>Max Severity</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblPdmImg"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-header">Latest Visual Output</div>
+          <div class="card-body">
+            <div id="outPdmImg" class="text-muted mb-2">
+              Upload an image and click Analyze. Result shows a heatmap overlay on the asset.
+            </div>
+            <div class="border rounded position-relative" style="overflow: hidden; max-width: 900px">
+              <canvas id="imgCanvas" style="width: 100%; max-height: 520px"></canvas>
+            </div>
+            <div class="small text-muted mt-2">Heatmap legend: red = severe, orange = medium, yellow = low.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== Control-Room Maintenance =================== -->
+      <div id="maint" class="mb-4">
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-calendar2-check me-1"></i>
+            Control-Room — Maintenance Scheduler
+          </div>
+          <div class="card-body">
+            <form id="formMaint" class="row g-2">
+              <div class="col-md-3">
+                <label class="form-label">Equipment ID</label>
+                <input class="form-control" name="asset" placeholder="e.g., PUMP-12-07" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Maintenance Type</label>
+                <select class="form-select" name="mtype">
+                  <option>Planned Service</option>
+                  <option>Corrective Repair</option>
+                  <option>Inspection</option>
+                  <option>Overhaul</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Priority</label>
+                <select class="form-select" name="prio">
+                  <option>Low</option>
+                  <option selected>Medium</option>
+                  <option>High</option>
+                  <option>Critical</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Start (local)</label>
+                <input type="datetime-local" class="form-control" name="start" required />
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Duration (h)</label>
+                <input type="number" class="form-control" name="dur" value="4" min="1" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Crew</label>
+                <input class="form-control" name="crew" placeholder="Team A" />
+              </div>
+              <div class="col-md-5">
+                <label class="form-label">Work Scope</label>
+                <input
+                  class="form-control"
+                  name="scope"
+                  placeholder="e.g., seal kit replacement, lubrication, alignment" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Notify</label>
+                <div class="checkgrid">
+                  <label>
+                    <input type="checkbox" name="notify" value="In-app" checked />
+                    In-app
+                  </label>
+                  <label>
+                    <input type="checkbox" name="notify" value="Email" checked />
+                    Email
+                  </label>
+                  <label>
+                    <input type="checkbox" name="notify" value="SMS" />
+                    SMS
+                  </label>
+                  <label>
+                    <input type="checkbox" name="notify" value="Radio/PA" />
+                    Radio/PA
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="small text-muted">
+                  Creates a visible schedule card for operators; auto status updates (Due/In-progress/Overdue) with
+                  notifications.
+                </div>
+              </div>
+              <div class="col-md-2 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success">
+                  <i class="bi bi-plus-circle"></i>
+                  Schedule
+                </button>
+              </div>
+            </form>
+            <div class="mt-2 small" id="maintStatus">
+              <span class="pill bg-secondary text-white">Idle</span>
+              · scheduler ready
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header">Scheduled Maintenance Board</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Start</th>
+                    <th>Equipment</th>
+                    <th>Type/Priority</th>
+                    <th>Crew</th>
+                    <th>Status</th>
+                    <th>Notifications</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblMaint"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-tools me-1"></i>
+            Parts & Cost — Planner
+          </div>
+          <div class="card-body">
+            <form id="formParts" class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label">Work Order / Link to Schedule</label>
+                <select class="form-select" id="partsWO" required></select>
+              </div>
+              <div class="col-md-8">
+                <label class="form-label">Defects to Address (suggested → parts)</label>
+                <div class="checkgrid">
+                  <label>
+                    <input type="checkbox" name="dcls" value="leak" />
+                    Leak / Oil stain
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="loose" />
+                    Loose/Missing Fastener
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="belt" />
+                    Belt/Chain Wear
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="idler" />
+                    Idler/Pulley Damage
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="blockage" />
+                    Chute/Screen Blockage
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="corrosion" />
+                    Corrosion/Rust
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="misalign" />
+                    Misalignment
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="guard" />
+                    Broken/Missing Guard
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="impeller" />
+                    Impeller/Blade Damage
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="dust" />
+                    Dust Build-up
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="crack" />
+                    Crack/Fracture
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="overheat" />
+                    Hotspot/Overheating
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="seal" />
+                    Seal/Coupling Wear
+                  </label>
+                  <label>
+                    <input type="checkbox" name="dcls" value="cavitation" />
+                    Cavitation Pitting
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="small text-muted">
+                  Select known defects (from inspections/AI). The system maps defects → parts, checks stock & costs, and
+                  lets you request missing items.
+                </div>
+              </div>
+              <div class="col-md-2 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success">
+                  <i class="bi bi-basket"></i>
+                  Build Parts List
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header">Parts — Availability & Cost</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>SKU</th>
+                    <th>Part</th>
+                    <th>Needed</th>
+                    <th>In-Stock</th>
+                    <th>Unit Cost</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblParts"></tbody>
+              </table>
+            </div>
+            <div class="p-2 text-end">
+              <span class="me-3">Estimated Cost:</span>
+              <b id="partsTotal">$0.00</b>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-header">Parts Requests — History</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date/Time</th>
+                    <th>WO</th>
+                    <th>SKU</th>
+                    <th>Part</th>
+                    <th>Qty</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblReqs"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <br />
+
+        <!-- =================== Parts Analytics — Management View =================== -->
+        <div id="partsMgmt" class="mb-4">
+          <div class="card section-card mb-3">
+            <div class="card-header bg-success text-white">
+              <i class="bi bi-clipboard-data me-1"></i>
+              Requested Parts — Management View
+            </div>
+            <div class="card-body">
+              <div class="row g-2 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label">From (date)</label>
+                  <input type="date" class="form-control" id="partsAggFrom" />
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label">To (date)</label>
+                  <input type="date" class="form-control" id="partsAggTo" />
+                </div>
+                <div class="col-md-3 d-grid">
+                  <label class="form-label invisible">.</label>
+                  <button class="btn btn-outline-secondary" id="partsAggApply">
+                    <i class="bi bi-funnel"></i>
+                    Apply Filter
+                  </button>
+                </div>
+                <div class="col-md-3 d-grid">
+                  <label class="form-label invisible">.</label>
+                  <button class="btn btn-outline-primary" id="partsAggExport">
+                    <i class="bi bi-download"></i>
+                    Export CSV
+                  </button>
+                </div>
+              </div>
+
+              <div class="table-responsive mt-3">
+                <table class="table table-sm align-middle mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>SKU</th>
+                      <th>Part</th>
+                      <th>Requests</th>
+                      <th>Total Qty</th>
+                      <th>Pending</th>
+                      <th>Est Spend</th>
+                      <th>Last Requested</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tblPartsAgg"></tbody>
+                </table>
+              </div>
+              <div class="small text-muted mt-2">
+                Aggregates all requests from the “Parts Requests — History” log. “Est Spend” = unit cost × total qty
+                (catalog).
+              </div>
+            </div>
+          </div>
+
+          <div class="card section-card">
+            <div class="card-header">Requested Parts — Frequency Dashboard</div>
+            <div class="card-body">
+              <canvas id="chartPartsFreq" height="160"></canvas>
+              <div class="small text-muted mt-2">
+                Bars show number of request records per part (filter range applied).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== Security =================== -->
+      <div id="security" class="mb-4">
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <span>
+              <i class="bi bi-shield-lock me-1"></i>
+              AI-Assisted Security & Intrusion Detection
+            </span>
+            <span class="small" id="secStatus">
+              <span class="pill bg-secondary text-white">DISARMED</span>
+              · Camera DB poll: 5s
+            </span>
+          </div>
+          <div class="card-body">
+            <div class="row g-3">
+              <div class="col-lg-7">
+                <div class="border rounded p-3">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                      <div class="fw-bold">Data Source</div>
+                      <div class="text-muted small">CCTV/RTSP from Camera Database (auto every 5s)</div>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <button id="btnArm" class="btn btn-success btn-sm">
+                        <i class="bi bi-toggle-on"></i>
+                        Arm
+                      </button>
+                      <button id="btnDisarm" class="btn btn-outline-secondary btn-sm" disabled>
+                        <i class="bi bi-toggle-off"></i>
+                        Disarm
+                      </button>
+                    </div>
+                  </div>
+                  <hr />
+                  <div class="row g-2">
+                    <div class="col-md-6">
+                      <div class="form-label">Notification Channels</div>
+                      <div class="checkgrid">
+                        <label>
+                          <input type="checkbox" class="form-check-input me-1" checked disabled />
+                          Email
+                        </label>
+                        <label>
+                          <input type="checkbox" class="form-check-input me-1" checked disabled />
+                          SMS
+                        </label>
+                        <label>
+                          <input type="checkbox" class="form-check-input me-1" checked disabled />
+                          Audio Deterrent
+                        </label>
+                      </div>
+                      <div class="form-text">Auto-sent with snapshot & location when unknown face is detected.</div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-label">Last Capture (auto)</div>
+                      <img
+                        id="secThumb"
+                        class="thumb"
+                        src="https://via.placeholder.com/240x160?text=Waiting..."
+                        alt="last frame" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-5">
+                <div class="border rounded p-3">
+                  <div class="fw-bold mb-2">Latest Event</div>
+                  <div id="secOut" class="text-muted">Arm to begin polling the camera database.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-header">Intrusion History</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date/Time</th>
+                    <th>Zone</th>
+                    <th>Type</th>
+                    <th>Channels</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblSec"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== Energy & Water =================== -->
+      <div id="water" class="mb-4">
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-droplet me-1"></i>
+            Energy & Water Optimization
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="me-3">
+                <input class="form-check-input me-1" type="radio" name="waterMode" value="manual" checked />
+                Manual Capture (operator)
+              </label>
+              <label>
+                <input class="form-check-input me-1" type="radio" name="waterMode" value="auto" />
+                Automatic (smart meters)
+              </label>
+            </div>
+            <form id="formWater" class="row g-2">
+              <div class="col-md-4">
+                <label class="form-label">District/Level</label>
+                <input class="form-control" name="district" placeholder="22 Level South" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Target Pressure (kPa)</label>
+                <input type="number" class="form-control" name="pressure" value="450" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Energy Intensity Target (kWh/ML)</label>
+                <input type="number" class="form-control" name="kwhml" value="380" />
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">IWA Components</label>
+                <div class="checkgrid">
+                  <label>
+                    <input type="checkbox" name="iwa" value="SIV" />
+                    System Input Volume
+                  </label>
+                  <label>
+                    <input type="checkbox" name="iwa" value="Auth" />
+                    Authorized Consumption
+                  </label>
+                  <label>
+                    <input type="checkbox" name="iwa" value="AppLoss" />
+                    Apparent Losses
+                  </label>
+                  <label>
+                    <input type="checkbox" name="iwa" value="RealLoss" />
+                    Real Losses
+                  </label>
+                  <label>
+                    <input type="checkbox" name="iwa" value="NRW" checked />
+                    NRW
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success">Compute Balance</button>
+              </div>
+            </form>
+
+            <div id="waterAutoBox" class="border rounded p-3 mt-3" style="display: none">
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <div class="fw-bold">Smart Meter Connector</div>
+                  <div class="text-muted small">Auto-subscribe to meters → stream flows/pressures & energy.</div>
+                </div>
+                <button id="btnWaterConnect" class="btn btn-success btn-sm">
+                  <i class="bi bi-link-45deg"></i>
+                  Connect
+                </button>
+              </div>
+              <div class="mt-2 small" id="waterConnStatus">
+                <span class="pill bg-secondary text-white">Disconnected</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header">Historical Results</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>District</th>
+                    <th>NRW</th>
+                    <th>kWh/ML</th>
+                    <th>Note</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblWater"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-header">Latest Output</div>
+          <div class="card-body" id="outWater">
+            Choose Manual or Automatic. In Auto, click “Connect” to start streaming.
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== HSE =================== -->
+      <!-- =================== HSE Dictionary Manager =================== -->
+      <div id="hseDictCard" class="card section-card mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+          <span>
+            <i class="bi bi-sliders me-1"></i>
+            HSE Dictionary Manager
+          </span>
+          <span class="small" id="hseDictStatus"><span class="pill bg-secondary text-white">Idle</span></span>
+        </div>
+        <div class="card-body">
+          <form id="formHseDict" class="row g-2">
+            <div class="col-md-3">
+              <label class="form-label">Severity</label>
+              <select class="form-select" name="sev">
+                <option value="A">A (Critical)</option>
+                <option value="B">B (High)</option>
+                <option value="C" selected>C (Moderate)</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Category</label>
+              <input class="form-control" name="cat" placeholder="e.g., Machinery Guarding" required />
+            </div>
+            <div class="col-md-5">
+              <label class="form-label">Keywords (comma-separated)</label>
+              <input class="form-control" name="kw" placeholder="e.g., guard missing, nip point, interlock" required />
+            </div>
+            <div class="col-md-3 d-grid">
+              <label class="form-label invisible">.</label>
+              <button class="btn btn-success" type="submit">
+                <i class="bi bi-plus-circle"></i>
+                Add / Update
+              </button>
+            </div>
+            <div class="col-md-3 d-grid">
+              <label class="form-label invisible">.</label>
+              <button class="btn btn-outline-secondary" id="btnHseDictExport" type="button">
+                <i class="bi bi-download"></i>
+                Export JSON
+              </button>
+            </div>
+            <div class="col-md-3 d-grid">
+              <label class="form-label invisible">.</label>
+              <label class="btn btn-outline-secondary mb-0">
+                <i class="bi bi-upload"></i>
+                Import JSON
+                <input id="hseDictImport" type="file" accept="application/json" hidden />
+              </label>
+            </div>
+            <div class="col-md-3 d-grid">
+              <label class="form-label invisible">.</label>
+              <button class="btn btn-outline-danger" id="btnHseDictReset" type="button">
+                <i class="bi bi-trash3"></i>
+                Reset All
+              </button>
+            </div>
+          </form>
+
+          <hr />
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="min-width: 220px">Category</th>
+                  <th>A Keywords</th>
+                  <th>B Keywords</th>
+                  <th>C Keywords</th>
+                  <th>All Category Keywords (matcher)</th>
+                  <th style="width: 80px">Action</th>
+                </tr>
+              </thead>
+              <tbody id="tblHseDict"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="hse" class="mb-4">
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-flag me-1"></i>
+            Safety & Hazards — Auto-Detection
+          </div>
+
+          <div class="card-body">
+            <form id="formHSE" class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label">Area/Working Place</label>
+                <input class="form-control" name="area" placeholder="18L Stope 7" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Shift</label>
+                <select class="form-select" name="shift">
+                  <option>Day</option>
+                  <option>Night</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Upload PTO/Declaration</label>
+                <input type="file" class="form-control" name="pto" accept="image/*,.pdf" required />
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success">Analyze & Submit</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header">Historical Results</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Ticket</th>
+                    <th>Area</th>
+                    <th>Detected Severity</th>
+                    <th>Owner</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblHSE"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-header">Latest Output</div>
+          <div class="card-body" id="outHSE">
+            Upload a PTO/Declaration to auto-detect hazard (Critical / High / Moderate) and escalate.
+          </div>
+        </div>
+
+        <br />
+
+        <!-- =================== HSE — PTO Scanner & Hazard Summary =================== -->
+        <div id="hseScanner" class="card section-card mb-4">
+          <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <span>
+              <i class="bi bi-file-earmark-text me-1"></i>
+              PTO Scanner & Hazard Summary
+            </span>
+            <span class="small" id="hseScanStatus"><span class="pill bg-secondary text-white">Idle</span></span>
+          </div>
+          <div class="card-body">
+            <form id="formHseScan" class="row g-2">
+              <div class="col-md-3">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" name="date" required />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Area/Working Place</label>
+                <input class="form-control" name="area" placeholder="e.g., 18L Stope 7" />
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Shift</label>
+                <select class="form-select" name="shift">
+                  <option>Day</option>
+                  <option>Night</option>
+                </select>
+              </div>
+              <div class="col-md-4 d-grid">
+                <label class="form-label">Paste PTO Text</label>
+                <textarea
+                  class="form-control"
+                  name="ptotext"
+                  rows="1"
+                  placeholder="Paste extracted PTO text here…"
+                  required></textarea>
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success" type="submit">
+                  <i class="bi bi-search"></i>
+                  Scan & Classify
+                </button>
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-outline-secondary" id="btnHseSeed" type="button">
+                  <i class="bi bi-bezier2"></i>
+                  Seed Sample PTOs
+                </button>
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-outline-primary" id="btnHseExport" type="button">
+                  <i class="bi bi-download"></i>
+                  Export CSV
+                </button>
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-outline-dark" id="btnHseRecompute" type="button">
+                  <i class="bi bi-bar-chart"></i>
+                  Recompute Overview
+                </button>
+              </div>
+            </form>
+
+            <hr class="my-3" />
+
+            <div class="row g-3">
+              <div class="col-lg-6">
+                <div class="border rounded p-2">
+                  <div class="fw-bold mb-1">Daily Severity Totals</div>
+                  <canvas id="chartHseDaily" height="150"></canvas>
+                  <div class="table-responsive mt-2">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Date</th>
+                          <th>A</th>
+                          <th>B</th>
+                          <th>C</th>
+                          <th>Total</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tblHseDaily"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="border rounded p-2">
+                  <div class="fw-bold mb-1">Category Breakdown (A/B/C)</div>
+                  <canvas id="chartHseCats" height="150"></canvas>
+                  <div class="table-responsive mt-2">
+                    <table class="table table-sm align-middle mb-0">
+                      <thead class="table-light">
+                        <tr>
+                          <th>Category</th>
+                          <th>A</th>
+                          <th>B</th>
+                          <th>C</th>
+                          <th>Total</th>
+                          <th>Action</th>
+                        </tr>
+                      </thead>
+                      <tbody id="tblHseCats"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card section-card mt-3">
+              <div class="card-header">PTO Scan — Detections Log</div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle mb-0">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Date/Shift</th>
+                        <th>Area</th>
+                        <th>Severity</th>
+                        <th>Category</th>
+                        <th>Keywords</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody id="tblHseScanLog"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =================== Fragmentation =================== -->
+      <div id="frag" class="mb-4">
+        <div class="card section-card mb-3">
+          <div class="card-header bg-success text-white">
+            <i class="bi bi-graph-up-arrow me-1"></i>
+            Fragmentation — Inputs
+          </div>
+          <div class="card-body">
+            <form id="formFrag" class="row g-2">
+              <div class="col-md-12">
+                <label class="form-label">Blast/Conveyor Image</label>
+                <input type="file" class="form-control" accept="image/*" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Scale (mm/pixel)</label>
+                <input type="number" class="form-control" name="scale" value="0.35" step="0.01" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Target P80 (mm)</label>
+                <input type="number" class="form-control" name="p80" value="120" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Ore Domain</label>
+                <input class="form-control" name="domain" placeholder="Reef A – mid-hardness" />
+              </div>
+              <div class="col-md-3 d-grid">
+                <label class="form-label invisible">.</label>
+                <button class="btn btn-success">Analyze</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card section-card mb-3">
+          <div class="card-header">Historical Results</div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Domain</th>
+                    <th>P80</th>
+                    <th>P50</th>
+                    <th>Delta</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="tblFrag"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="card section-card">
+          <div class="card-header">Latest Output</div>
+          <div class="card-body">
+            <div id="outFrag" class="mb-3">Run an analysis to see current vs optimized charts.</div>
+            <div class="row g-3">
+              <div class="col-lg-6"><canvas id="chartFragBars" height="150"></canvas></div>
+              <div class="col-lg-6"><canvas id="chartFragLine" height="150"></canvas></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ===================== 2.4 REAL‑TIME FRAGMENTATION ANALYSIS — Optimizer ===================== -->
+<section id="fragRtOpt" class="mb-4">
+  <div class="card section-card mb-3">
+    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-magic me-1"></i> Real‑Time Fragmentation — Plant‑Aware Optimizer</span>
+      <span class="small" id="fragOptStatus"><span class="pill bg-secondary text-white">Idle</span></span>
+    </div>
+    <div class="card-body">
+      <form id="fragOptForm" class="row g-3">
+        <!-- Camera / Conveyor -->
+        <div class="col-12"><h6 class="mb-1">Camera / Conveyor</h6></div>
+        <div class="col-md-3">
+          <label class="form-label">Scale (mm/pixel)</label>
+          <input name="scale" type="number" step="0.01" value="0.35" class="form-control" required>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">ROI (x,y,w,h %)</label>
+          <input name="roi" class="form-control" placeholder="10,20,80,60">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Belt Speed (m/s)</label>
+          <input name="belt_speed" type="number" step="0.01" value="2.5" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Frame Rate (fps)</label>
+          <input name="fps" type="number" value="5" class="form-control">
+        </div>
+
+        <!-- Plant constraints -->
+        <div class="col-12"><h6 class="mb-1 mt-2">Plant Constraints</h6></div>
+        <div class="col-md-3">
+          <label class="form-label">Crusher Type</label>
+          <select name="crusher" class="form-select">
+            <option>Jaw</option><option>Cone</option><option>Gyratory</option><option>Impact</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Crusher CSS (mm)</label>
+          <input name="css" type="number" value="30" class="form-control">
+          <div class="form-text">Top size guideline ≈ 2×CSS.</div>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Screen Apertures (mm)</label>
+          <input name="screens" class="form-control" placeholder="150, 75, 25">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Mill Target P80 (µm)</label>
+          <input name="mill_p80" type="number" value="150" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Max Oversize Allowed (% > 200 mm)</label>
+          <input name="oversize_limit" type="number" value="5" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Throughput Target (TPH)</label>
+          <input name="tph_target" type="number" value="900" class="form-control">
+        </div>
+
+        <!-- Live PSD (ingest) -->
+        <div class="col-12"><h6 class="mb-1 mt-2">Live PSD (from camera)</h6></div>
+        <div class="col-md-3">
+          <label class="form-label">Live P80 (mm)</label>
+          <input name="live_p80" type="number" value="138" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Live P50 (mm)</label>
+          <input name="live_p50" type="number" value="82" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">% > 200 mm</label>
+          <input name="gt200" type="number" step="0.1" value="7.6" class="form-control">
+        </div>
+        <div class="col-md-3 d-grid">
+          <label class="form-label invisible">.</label>
+          <button id="btnFragUseLive" type="button" class="btn btn-outline-secondary"><i class="bi bi-broadcast-pin"></i> Ingest From Live</button>
+        </div>
+
+        <!-- Rock & Blast model -->
+        <div class="col-12"><h6 class="mb-1 mt-2">Rock & Blast (Kuz‑Ram / R–R or Swebrec)</h6></div>
+        <div class="col-md-3">
+          <label class="form-label">UCS (MPa)</label>
+          <input name="ucs" type="number" value="120" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Jointing / RMD</label>
+          <input name="jointing" class="form-control" placeholder="moderate, 0.3–1 m">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Hole Diameter (mm)</label>
+          <input name="hole_d" type="number" value="115" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Bench Height (m)</label>
+          <input name="bench_h" type="number" value="12" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Burden × Spacing (m)</label>
+          <input name="pattern" class="form-control" value="3.5 × 4.0">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Stemming (m)</label>
+          <input name="stemming" type="number" value="2.8" class="form-control">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Explosive (ρ, MJ/kg)</label>
+          <input name="explosive" class="form-control" value="ANFO 0.85 g/cc, 3.5 MJ/kg">
+        </div>
+        <div class="col-md-3">
+          <label class="form-label">Powder Factor (kg/m³)</label>
+          <input name="pf" type="number" step="0.01" value="0.75" class="form-control">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">Initiation / Delays (ms)</label>
+          <input name="delays" class="form-control" placeholder="17–25 ms inter‑row">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label">PSD Model</label>
+          <select name="model" class="form-select">
+            <option value="kuz-ram" selected>Kuz‑Ram (Rosin–Rammler fit)</option>
+            <option value="swebrec">Swebrec (3‑parameter)</option>
+          </select>
+        </div>
+        <div class="col-md-4 d-grid">
+          <label class="form-label invisible">.</label>
+          <button class="btn btn-success" type="submit"><i class="bi bi-magic"></i> Propose Optimized Fragmentation</button>
+        </div>
+      </form>
+
+      <hr class="my-3">
+
+      <!-- Results -->
+      <div class="row g-3">
+        <div class="col-xl-5">
+          <div class="border rounded p-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <div class="fw-bold">KPIs</div>
+              <div id="fragOptMeta" class="small text-muted">—</div>
+            </div>
+            <div id="fragOptSummary" class="small">Fill the form and click Propose…</div>
+            <hr>
+            <div class="small text-muted">Actions</div>
+            <div id="fragOptActions" class="small">—</div>
+          </div>
+        </div>
+        <div class="col-xl-7">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="border rounded p-2">
+                <div class="fw-bold mb-1">CDF — Current vs Target</div>
+                <canvas id="chartFragOptCdf" height="160"></canvas>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="border rounded p-2">
+                <div class="fw-bold mb-1">Histogram — Current vs Target</div>
+                <canvas id="chartFragOptHist" height="160"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- History table -->
+      <div class="table-responsive mt-3">
+        <table class="table table-sm align-middle mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Date/Time</th>
+              <th>P80 (→target)</th>
+              <th>P50 (→target)</th>
+              <th>%>200mm</th>
+              <th>PF (kg/m³)</th>
+              <th>Pattern</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tblFragOpt"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+// ============== Real‑Time Frag Optimizer: logic (no external deps beyond Bootstrap + Chart.js) ==============
+(function(){
+  const $ = (s)=>document.querySelector(s);
+  function list(items){ return '<ul>'+items.map(x=>`<li>${x}</li>`).join('')+'</ul>'; }
+  function pill(cls, txt){ return `<span class="pill ${cls} text-white">${txt}</span>`; }
+  function nowStr(){ return new Date().toISOString().replace('T',' ').slice(0,19); }
+  function injectRows(tbodyId, rows, cols){
+    const tb = document.getElementById(tbodyId);
+    tb.innerHTML = rows.map(r=>{
+      const cells = cols.map(c=>`<td>${r[c]??''}</td>`).join('');
+      const body = encodeURIComponent(r.detail||'—');
+      const ttl = (r.title||'Details').replace(/"/g,'&quot;');
+      return `<tr>${cells}<td><button class="btn btn-sm btn-outline-primary" data-detail-title="${ttl}" data-detail-body="${body}" onclick="openDetail(this)">View</button></td></tr>`;
+    }).join('');
+  }
+
+  // Rosin–Rammler helpers
+  // CDF(d) = 1 - exp(-(d/λ)^n). Given Pxx and n → λ = d / (-ln(1-P))^(1/n)
+  function rr_lambda(d_at_P, P, n){ return d_at_P / Math.pow(-Math.log(1-P), 1/n); }
+  function rr_cdf(d, lambda, n){ return 1 - Math.exp(-Math.pow(d/lambda, n)); }
+  function rr_percentile(P, lambda, n){ return lambda * Math.pow(-Math.log(1-P), 1/n); }
+
+  // Fit current curve from live P80 & an assumed n (uniformity)
+  function fitRRfromP80(P80, n){ const lambda = rr_lambda(P80, 0.8, n); return {lambda, n}; }
+
+  // Estimate %>X for R–R
+  function pctGreaterThan(x, lambda, n){ const cdf = rr_cdf(x, lambda, n); return (1-cdf)*100; }
+
+  // Build arrays for plotting
+  function curveArr(lambda, n, xs){ return xs.map(x=> Math.round(rr_cdf(x, lambda, n)*1000)/10 ); }
+  function histCounts(sizes, bins){
+    const counts = bins.map(()=>0);
+    sizes.forEach(s=>{ for(let i=0;i<bins.length;i++){ if(s<=bins[i]){ counts[i]++; return; } } counts[counts.length-1]++; });
+    return counts;
+  }
+
+  // Suggest blast changes (very simplified, illustrative)
+  function proposeBlastChanges(deltaP80, pf, pattern, stemming){
+    // deltaP80 > 0 means we need smaller P80 (current > target)
+    const need = Math.max(0, deltaP80);
+    let pfProp = pf, patternProp = pattern, stemProp = stemming;
+    let notes = [];
+    if(need > 0){
+      const inc = Math.min(0.25, 0.06 + need/120); // 6% to 25%
+      pfProp = +(pf*(1+inc)).toFixed(2);
+      // tighten pattern ~ half of relative PF increase
+      try{
+        const [bRaw,sRaw] = (pattern||'3.5 × 4.0').split(/[x×]/).map(x=>parseFloat(x));
+        const b = isNaN(bRaw)?3.5:bRaw, s = isNaN(sRaw)?4.0:sRaw;
+        const t = (1 - inc*0.5);
+        patternProp = (b*t).toFixed(2)+' × '+(s*t).toFixed(2);
+      }catch{ patternProp = pattern; }
+      stemProp = Math.max(0, +(stemming*0.9).toFixed(2));
+      notes.push('Increase powder factor and slightly tighten burden/spacing to shift mean size down.');
+      notes.push('Slightly shorter stemming and crisper timing reduce coarse tail; validate flyrock risk.');
+    }else{
+      notes.push('Current PSD within constraints; maintain PF and pattern, monitor variance.');
+    }
+    return { pfProp, patternProp, stemProp, notes };
+  }
+
+  // UI state
+  let cdfChart=null, histChart=null; const histBins=[10,20,40,60,80,100,120,150,200,300];
+  const rows=[];
+
+  function setStatus(txt, cls){ $('#fragOptStatus').innerHTML = pill(cls||'bg-success', txt); }
+
+  // Ingest from live hook (optional). If window.getLivePSD exists, use it; else do a small jitter.
+  $('#btnFragUseLive').addEventListener('click', ()=>{
+    const f = document.forms.fragOptForm || $('#fragOptForm');
+    if(typeof window.getLivePSD === 'function'){
+      const L = window.getLivePSD(); // {p80, p50, gt200}
+      if(L){ f.live_p80.value = Math.round(L.p80); f.live_p50.value = Math.round(L.p50); f.gt200.value = +(+L.gt200).toFixed(1); }
+    }else{
+      // demo jitter
+      const p80 = Math.round(120 + Math.random()*40);
+      const p50 = Math.round(p80*0.6);
+      const gt = Math.max(0,(p80-150))*0.2 + (Math.random()*3);
+      f.live_p80.value=p80; f.live_p50.value=p50; f.gt200.value=gt.toFixed(1);
+    }
+    setStatus('Live PSD ingested','bg-info');
+  });
+
+  // Main submit
+  $('#fragOptForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const fd = new FormData(e.target);
+    const css = +(fd.get('css')||30), oversLim = +(fd.get('oversize_limit')||5);
+    const liveP80 = +(fd.get('live_p80')||130), liveP50 = +(fd.get('live_p50')||80), gt200 = +(fd.get('gt200')||6);
+    const pf = +(fd.get('pf')||0.75);
+    const pattern = fd.get('pattern')||'3.5 × 4.0';
+    const stemming = +(fd.get('stemming')||2.8);
+
+    // Assume current uniformity n from P80/P50 ratio (rough heuristic)
+    const ratio = Math.max(1.05, liveP80/Math.max(1, liveP50));
+    let n = Math.min(2.2, Math.max(0.9, 1.2 + (1.6 - ratio))); // 0.9..2.2 typical
+
+    // Fit current RR curve
+    let {lambda} = fitRRfromP80(liveP80, n);
+
+    // Choose target P80 by searching downward for constraints: <=2*CSS and %>200 <= limit
+    const cssTop = css*2 - 5; // allow a little margin
+    let targetP80 = liveP80;
+    for(let d=0; d<=40; d+=1){
+      const cand = liveP80 - d;
+      if(cand <= 20) break; // floor
+      const lamC = rr_lambda(cand, 0.8, n);
+      const pctOver200 = pctGreaterThan(200, lamC, n);
+      if(cand <= cssTop && pctOver200 <= oversLim){ targetP80 = cand; lambda = lamC; break; }
+    }
+
+    // Compute derived values
+    const targetP50 = Math.round(rr_percentile(0.5, lambda, n));
+    const pctOver200_now = pctGreaterThan(200, rr_lambda(liveP80,0.8,n), n).toFixed(1);
+    const pctOver200_tgt = pctGreaterThan(200, lambda, n).toFixed(1);
+
+    // Proposals
+    const {pfProp, patternProp, stemProp, notes} = proposeBlastChanges(liveP80 - targetP80, pf, pattern, stemming);
+
+    // KPIs & summary
+    $('#fragOptMeta').textContent = `${nowStr()}`;
+    $('#fragOptSummary').innerHTML = list([
+      `Live: P80 ${Math.round(liveP80)} mm · P50 ${Math.round(liveP50)} mm · %>200 ${pctOver200_now}%`,
+      `CSS rule: top-size ≤ ${Math.round(css*2)} mm`,
+      `Target: P80 ${Math.round(targetP80)} mm · P50 ${targetP50} mm · %>200 ${pctOver200_tgt}%`,
+    ]);
+
+    const act = [];
+    if(liveP80>targetP80) act.push('OVERSIZE TRENDING — reduce mean size');
+    if(+pctOver200_now>oversLim) act.push('Oversize above limit — enforce blast changes next pattern');
+    if(act.length===0) act.push('Within constraints — monitor only');
+    $('#fragOptActions').innerHTML = list([
+      `Powder factor: ${pf.toFixed(2)} → ${pfProp.toFixed(2)} kg/m³`,
+      `Pattern: ${pattern} → ${patternProp}`,
+      `Stemming: ${stemming} m → ${stemProp} m`,
+      ...notes
+    ]);
+
+    setStatus(act[0] || 'Proposed', (liveP80>targetP80||+pctOver200_now>oversLim)?'bg-warning text-dark':'bg-success');
+
+    // Charts (CDF + Histogram) — current vs target
+    const xs = [10,20,40,60,80,100,120,150,200,250,300];
+    const lamNow = rr_lambda(liveP80,0.8,n);
+    const cdfNow = xs.map(x=>Math.round(rr_cdf(x, lamNow, n)*1000)/10);
+    const cdfTgt = xs.map(x=>Math.round(rr_cdf(x, lambda, n)*1000)/10);
+
+    const ctxC = document.getElementById('chartFragOptCdf').getContext('2d');
+    if(cdfChart) cdfChart.destroy();
+    cdfChart = new Chart(ctxC, { type:'line', data:{ labels: xs.map(x=>x+'mm'), datasets:[
+      { label:'Current', data:cdfNow, tension:0.3 },
+      { label:'Target', data:cdfTgt, tension:0.3 }
+    ]}, options:{ scales:{ y:{ beginAtZero:true, max:100, title:{display:true, text:'% passing'} } }, plugins:{ legend:{ position:'bottom' } } } });
+
+    // Fake sample sizes from each curve just for histogram contrast
+    function sampleRR(lambda,n,count){ const out=[]; for(let i=0;i<count;i++){ const u=Math.random(); const d = rr_percentile(u, lambda, n); out.push(d); } return out; }
+    const sampNow = sampleRR(lamNow,n,600);
+    const sampTgt = sampleRR(lambda,n,600);
+    const hNow = histCounts(sampNow, histBins);
+    const hTgt = histCounts(sampTgt, histBins);
+
+    const ctxH = document.getElementById('chartFragOptHist').getContext('2d');
+    if(histChart) histChart.destroy();
+    histChart = new Chart(ctxH, { type:'bar', data:{ labels: histBins.map(b=>b+'mm'), datasets:[
+      { label:'Current', data:hNow },
+      { label:'Target', data:hTgt }
+    ]}, options:{ plugins:{ legend:{ position:'bottom' } } } });
+
+    // History row
+    rows.unshift({
+      dt: nowStr(),
+      p80: `${Math.round(liveP80)} → <b>${Math.round(targetP80)}</b>`,
+      p50: `${Math.round(liveP50)} → <b>${targetP50}</b>`,
+      gt200: `${pctOver200_now}% → <b>${pctOver200_tgt}%</b>`,
+      pf: `${pf.toFixed(2)} → <b>${pfProp.toFixed(2)}</b>`,
+      pattern: `${pattern} → <b>${patternProp}</b>`,
+      title: 'Optimization Detail',
+      detail: `<div>${list([
+        `CSS: ${css} mm (2×=${css*2} mm)`,
+        `Live: P80 ${Math.round(liveP80)} mm, P50 ${Math.round(liveP50)} mm, %>200 ${pctOver200_now}%`,
+        `Target: P80 ${Math.round(targetP80)} mm, P50 ${targetP50} mm, %>200 ${pctOver200_tgt}%`,
+        `PF: ${pf.toFixed(2)} → ${pfProp.toFixed(2)} kg/m³`,
+        `Pattern: ${pattern} → ${patternProp}`,
+        `Stemming: ${stemming} m → ${stemProp} m`
+      ])}<hr><canvas data-chart="frag" height="120"></canvas></div>`
+    });
+    injectRows('tblFragOpt', rows, ['dt','p80','p50','gt200','pf','pattern']);
+  });
+})();
+</script>
+
+    </main>
+
+    <!-- Universal “View” Modal -->
+    <div class="modal fade" id="detailModal" tabindex="-1">
+      <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="detailTitle">Details</h5>
+            <button class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body" id="detailBody">—</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+      /* ---------- helpers ---------- */
+      const $ = (sel) => document.querySelector(sel);
+      function list(items) {
+        return "<ul>" + items.map((x) => `<li>${x}</li>`).join("") + "</ul>";
+      }
+
+      /* SINGLE-ENCODE injector (encode only here) */
+      function injectRows(tbodyId, rows, cols) {
+        const tb = document.getElementById(tbodyId);
+        tb.innerHTML = rows
+          .map((r) => {
+            const cells = cols.map((c) => `<td>${r[c]}</td>`).join("");
+            const title = (r.title || "Record Details").replace(/"/g, "&quot;");
+            const body = encodeURIComponent(r.detail || "—"); // encode once
+            const snap = r.snapshot ? ` data-snapshot="${r.snapshot}"` : "";
+            return `<tr>${cells}<td><button class="btn btn-sm btn-outline-primary" data-detail-title="${title}" data-detail-body="${body}"${snap} onclick="openDetail(this)">View</button></td></tr>`;
+          })
+          .join("");
+      }
+
+      /* SINGLE-DECODE modal opener */
+      function openDetail(btn) {
+        const title = btn.getAttribute("data-detail-title") || "Details";
+        const encoded = btn.getAttribute("data-detail-body") || "";
+        let html;
+        try {
+          html = decodeURIComponent(encoded);
+        } catch {
+          html = encoded;
+        }
+        $("#detailTitle").textContent = title;
+        $("#detailBody").innerHTML = html;
+        new bootstrap.Modal(document.getElementById("detailModal")).show();
+
+        // If a snapshot of a canvas was provided for this row, draw it inside #detailImg
+        const snap = btn.getAttribute("data-snapshot");
+        if (snap) {
+          const cv = document.querySelector("#detailBody #detailImg");
+          if (cv) {
+            const ctx = cv.getContext("2d");
+            const img = new Image();
+            img.onload = () => ctx.drawImage(img, 0, 0, cv.width, cv.height);
+            img.src = snap;
+          }
+        }
+
+        // Lazy-render any charts requested in the detail body
+        document.querySelectorAll("#detailBody canvas[data-chart]").forEach((cv) => {
+          if (cv.dataset.ready) return;
+          cv.dataset.ready = "1";
+          const type = cv.dataset.chart;
+          if (type === "pdm") {
+            new Chart(cv, {
+              type: "line",
+              data: {
+                labels: ["-4d", "-3d", "-2d", "-1d", "Now", "RUL"],
+                datasets: [{ label: "Predicted Health", data: [92, 88, 83, 78, 72, 20], tension: 0.35 }],
+              },
+              options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } },
+            });
+          }
+          if (type === "water") {
+            new Chart(cv, {
+              type: "bar",
+              data: { labels: ["NRW %", "kWh/ML"], datasets: [{ label: "Value", data: [14.3, 395] }] },
+              options: { plugins: { legend: { display: false } } },
+            });
+          }
+          if (type === "sec") {
+            new Chart(cv, {
+              type: "doughnut",
+              data: { labels: ["Email", "SMS", "Audio"], datasets: [{ data: [1, 1, 1] }] },
+              options: { plugins: { legend: { position: "bottom" } } },
+            });
+          }
+          if (type === "hse") {
+            new Chart(cv, {
+              type: "bar",
+              data: { labels: ["A", "B", "C"], datasets: [{ label: "Confidence", data: [0.78, 0.15, 0.07] }] },
+              options: { scales: { y: { beginAtZero: true, max: 1 } }, plugins: { legend: { display: false } } },
+            });
+          }
+          if (type === "frag") {
+            new Chart(cv, {
+              type: "bar",
+              data: {
+                labels: ["P80", "P50"],
+                datasets: [
+                  { label: "Current", data: [138, 82] },
+                  { label: "Optimized", data: [120, 72] },
+                ],
+              },
+              options: { plugins: { legend: { position: "bottom" } } },
+            });
+          }
+          if (type === "parts-mini") {
+            new Chart(cv, {
+              type: "bar",
+              data: { labels: ["Req", "Qty"], datasets: [{ data: [1, 1] }] },
+              options: { plugins: { legend: { display: false } } },
+            });
+          }
+        });
+      }
+
+      /* ---------- PDM seed & logic ---------- */
+      let chartPdmRUL = null,
+        chartPdmVib = null;
+      const pdmRows = [
+        {
+          date: "2025-09-20",
+          equip: "PUMP-12-06",
+          finding: "Bearing anomaly",
+          rul: "220h",
+          wo: "WO-7132",
+          title: "PDM Preview — PUMP-12-06",
+          detail: `<div class="row g-3">
+        <div class="col-md-6"><b>RUL Projection</b><br><canvas data-chart="pdm" height="120"></canvas></div>
+        <div class="col-md-6"><b>Details</b>${list([
+          "Finding: Bearing anomaly (DE)",
+          "RUL: 220h",
+          "Work order: WO-7132",
+          "Assigned: bearing-cert tech (Shift B)",
+        ])}</div>
+      </div>`,
+        },
+      ];
+      injectRows("tblPDM", pdmRows, ["date", "equip", "finding", "rul", "wo"]);
+
+      document.getElementById("formPDM").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const equip = fd.get("equip_id") || "ASSET";
+        const cls = fd.get("asset_class");
+        $(
+          "#outPDM"
+        ).innerHTML = `<div class="mb-2"><span class="pill bg-warning text-dark">Predicted Failure in 9 days</span></div>
+        <strong>${equip}</strong> (${cls}) — bearing anomaly at DE side.
+        ${list([
+          "RUL: 220h",
+          "WO created: WO-" + Math.floor(Math.random() * 9000 + 1000),
+          "Assigned: bearing-cert tech (Shift B)",
+          "Spares OK: 6206-2RS x4",
+        ])}`;
+        const c1 = document.getElementById("chartPdmRUL").getContext("2d");
+        chartPdmRUL && chartPdmRUL.destroy();
+        chartPdmRUL = new Chart(c1, {
+          type: "line",
+          data: {
+            labels: ["-4d", "-3d", "-2d", "-1d", "Now", "RUL"],
+            datasets: [{ label: "Predicted Health", data: [92, 88, 83, 78, 72, 20], tension: 0.35 }],
+          },
+          options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 100 } } },
+        });
+        const c2 = document.getElementById("chartPdmVib").getContext("2d");
+        chartPdmVib && chartPdmVib.destroy();
+        chartPdmVib = new Chart(c2, {
+          type: "line",
+          data: {
+            labels: ["-4d", "-3d", "-2d", "-1d", "Now"],
+            datasets: [{ label: "Vib RMS", data: [2.1, 2.3, 2.6, 2.9, 3.4], tension: 0.35 }],
+          },
+          options: { plugins: { legend: { position: "bottom" } } },
+        });
+        pdmRows.unshift({
+          date: new Date().toISOString().slice(0, 10),
+          equip,
+          finding: "Bearing anomaly",
+          rul: "~220h",
+          wo: "WO-" + Math.floor(Math.random() * 9000 + 1000),
+          title: `PDM Preview — ${equip}`,
+          detail: `<div class="row g-3">
+          <div class="col-md-6"><b>RUL Projection</b><br><canvas data-chart="pdm" height="120"></canvas></div>
+          <div class="col-md-6"><b>Details</b>${list([
+            `Asset Class: ${cls}`,
+            "Finding: Bearing anomaly",
+            "RUL: ~220h",
+          ])}</div>
+        </div>`,
+        });
+        injectRows("tblPDM", pdmRows, ["date", "equip", "finding", "rul", "wo"]);
+      });
+
+      /* ---------- Security ---------- */
+      let secInterval = null;
+      const zones = ["Perimeter Gate 3", "Inactive Tunnel 4W", "Plant Yard NE"];
+      const secRows = [
+        {
+          date: "2025-09-22 02:14",
+          zone: "Inactive Tunnel 4W",
+          type: "Unknown Face",
+          channels: "Email, SMS, Audio",
+          status: "Patrol Dispatched",
+          title: "Intrusion Event — Inactive Tunnel 4W",
+          detail: `<div class="row g-3">
+        <div class="col-md-6"><img class="thumb" src="https://via.placeholder.com/240x160?text=Snapshot" alt=""><div class="small text-muted mt-2">Snapshot sent via Email/SMS</div></div>
+        <div class="col-md-6">${list([
+          "Time: 2025-09-22 02:14",
+          "Zone: Inactive Tunnel 4W",
+          "Channels: Email · SMS · Audio",
+          "SLA: 10 min",
+        ])}<hr><canvas data-chart="sec" height="120"></canvas></div>
+      </div>`,
+        },
+      ];
+      injectRows("tblSec", secRows, ["date", "zone", "type", "channels", "status"]);
+
+      function setSecStatus(armed) {
+        $("#secStatus").innerHTML = armed
+          ? '<span class="pill bg-success text-white">ARMED</span> · Camera DB poll: 5s'
+          : '<span class="pill bg-secondary text-white">DISARMED</span> · Camera DB poll: 5s';
+        $("#btnArm").disabled = armed;
+        $("#btnDisarm").disabled = !armed;
+      }
+      function simulateFrame() {
+        const dt = new Date();
+        $("#secThumb").src = `https://via.placeholder.com/240x160.png?text=${encodeURIComponent(
+          dt.toLocaleTimeString()
+        )}`;
+        if (Math.random() < 0.3) {
+          const zone = zones[Math.floor(Math.random() * zones.length)];
+          const when = dt.toISOString().slice(0, 16).replace("T", " ");
+          const row = {
+            date: when,
+            zone,
+            type: "Unknown Face",
+            channels: "Email, SMS, Audio",
+            status: "Patrol Dispatched",
+            title: `Intrusion Event — ${zone}`,
+            detail: `<div class="row g-3">
+            <div class="col-md-6"><img class="thumb" src="${
+              $("#secThumb").src
+            }" alt=""><div class="small text-muted mt-2">Snapshot sent via Email/SMS</div></div>
+            <div class="col-md-6">${list([
+              `Time: ${when}`,
+              `Zone: ${zone}`,
+              "Channels: Email · SMS · Audio",
+              "SLA: 10 min",
+            ])}<hr><canvas data-chart="sec" height="120"></canvas></div>
+          </div>`,
+          };
+          secRows.unshift(row);
+          injectRows("tblSec", secRows, ["date", "zone", "type", "channels", "status"]);
+          $(
+            "#secOut"
+          ).innerHTML = `<span class="pill bg-danger text-white">INTRUSION</span> ${zone} · ${when} — alert sent with image.`;
+        } else {
+          $("#secOut").textContent = "No unknown faces detected in the last cycle.";
+        }
+      }
+      document.getElementById("btnArm").addEventListener("click", () => {
+        setSecStatus(true);
+        if (secInterval) clearInterval(secInterval);
+        simulateFrame();
+        secInterval = setInterval(simulateFrame, 5000);
+      });
+      document.getElementById("btnDisarm").addEventListener("click", () => {
+        setSecStatus(false);
+        if (secInterval) clearInterval(secInterval);
+      });
+      setSecStatus(false);
+
+      /* ---------- Water ---------- */
+      const waterRows = [
+        {
+          date: "2025-09-21",
+          district: "22 Level South",
+          nrw: "14.3%",
+          kwh: "395",
+          note: "Night flow WM-205",
+          title: "Water Balance — 22 Level South",
+          detail: `<div>${list([
+            "NRW: 14.3%",
+            "Energy: 395 kWh/ML",
+            "Note: Night flow WM-205",
+          ])}<hr><canvas data-chart="water" height="120"></canvas></div>`,
+        },
+      ];
+      injectRows("tblWater", waterRows, ["date", "district", "nrw", "kwh", "note"]);
+
+      document.getElementsByName("waterMode").forEach((r) => {
+        r.addEventListener("change", () => {
+          const mode = document.querySelector('input[name="waterMode"]:checked').value;
+          document.getElementById("formWater").style.display = mode === "manual" ? "flex" : "none";
+          document.getElementById("waterAutoBox").style.display = mode === "auto" ? "block" : "none";
+          document.getElementById("outWater").textContent =
+            mode === "manual"
+              ? "Enter values and click Compute Balance."
+              : "Click Connect to begin streaming from smart meters.";
+        });
+      });
+      document.querySelector('input[name="waterMode"]:checked').dispatchEvent(new Event("change"));
+
+      document.getElementById("formWater").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const dist = fd.get("district") || "District A";
+        const kwh = fd.get("kwhml") || 380;
+        document.getElementById("outWater").innerHTML =
+          `<b>${dist}</b> — IWA (24h)` +
+          list([
+            "SIV: 4,200 m³",
+            "Authorized: 3,600 m³",
+            "NRW: 14.3% (target < 10%)",
+            `Energy: 395 kWh/ML (target ${kwh})`,
+            "Interlocks: Shift+Blast",
+          ]);
+        waterRows.unshift({
+          date: new Date().toISOString().slice(0, 10),
+          district: dist,
+          nrw: "14.3%",
+          kwh: "395",
+          note: "Manual compute",
+          title: `Water Balance — ${dist}`,
+          detail: `<div>${list([
+            "NRW: 14.3%",
+            "Energy: 395 kWh/ML",
+            "Note: Manual compute",
+          ])}<hr><canvas data-chart="water" height="120"></canvas></div>`,
+        });
+        injectRows("tblWater", waterRows, ["date", "district", "nrw", "kwh", "note"]);
+      });
+      let waterInterval = null,
+        waterConnected = false;
+      document.getElementById("btnWaterConnect").addEventListener("click", () => {
+        if (waterConnected) return;
+        waterConnected = true;
+        document.getElementById("waterConnStatus").innerHTML =
+          '<span class="pill bg-success text-white">Connected</span> · streaming…';
+        const dist = "22 Level South";
+        function tick() {
+          const nrw = (14 + Math.random() * 1.2).toFixed(1) + "%";
+          const kwh = (392 + Math.random() * 6).toFixed(0);
+          document.getElementById("outWater").innerHTML =
+            `<b>${dist}</b> — Auto IWA stream` +
+            list([`NRW: ${nrw} (target < 10%)`, `Energy: ${kwh} kWh/ML`, "Leak suspect: WM-205"]);
+          waterRows.unshift({
+            date: new Date().toISOString().slice(0, 10),
+            district: dist,
+            nrw,
+            kwh,
+            note: "Auto stream",
+            title: `Water Balance — ${dist}`,
+            detail: `<div>${list([
+              `NRW: ${nrw}`,
+              `Energy: ${kwh} kWh/ML`,
+              "Auto stream",
+            ])}<hr><canvas data-chart="water" height="120"></canvas></div>`,
+          });
+          injectRows("tblWater", waterRows, ["date", "district", "nrw", "kwh", "note"]);
+        }
+        tick();
+        waterInterval = setInterval(tick, 8000);
+      });
+
+      /* ---------- HSE ---------- */
+      const hseRows = [
+        {
+          ticket: "#84210",
+          area: "18L Stope 7",
+          haz: "A",
+          owner: "Auto-Assign",
+          status: "Open",
+          title: "Hazard A (Critical) — #84210",
+          detail: `<div class="row g-3">
+        <div class="col-md-6">${list([
+          "Area: 18L Stope 7",
+          "Shift: Day",
+          "Detected: A (Critical)",
+          "SLA: 4h",
+        ])}<hr><canvas data-chart="hse" height="120"></canvas></div>
+        <div class="col-md-6"><div class="small text-muted">Evidence/keywords:</div>${list([
+          "Missing guard",
+          "Unsafe posture",
+          "Gas reading > threshold",
+        ])}</div>
+      </div>`,
+        },
+      ];
+      injectRows("tblHSE", hseRows, ["ticket", "area", "haz", "owner", "status"]);
+
+      document.getElementById("formHSE").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const area = fd.get("area") || "—";
+        const shift = fd.get("shift");
+        const severity = "B (High)";
+        const ticket = "#" + (Math.floor(Math.random() * 90000) + 10000);
+        document.getElementById(
+          "outHSE"
+        ).innerHTML = `<div><span class="pill bg-warning text-dark">Hazard ${severity}</span> ${ticket} · Area: ${area} · Shift: ${shift}</div><div class="small text-muted">Auto-detected from uploaded PTO/Declaration.</div>`;
+        hseRows.unshift({
+          ticket,
+          area,
+          haz: "B",
+          owner: "Auto-Assign",
+          status: "Open",
+          title: `Hazard ${severity} — ${ticket}`,
+          detail: `<div class="row g-3">
+          <div class="col-md-6">${list([
+            `Area: ${area}`,
+            `Shift: ${shift}`,
+            `Detected: ${severity}`,
+            "SLA: 24h",
+          ])}<hr><canvas data-chart="hse" height="120"></canvas></div>
+          <div class="col-md-6"><div class="small text-muted">Evidence/keywords:</div>${list([
+            "Trailing cable trip",
+            "Improper PPE",
+          ])}</div>
+        </div>`,
+        });
+        injectRows("tblHSE", hseRows, ["ticket", "area", "haz", "owner", "status"]);
+      });
+
+      /* ---------- Fragmentation ---------- */
+      let fragBarChart = null,
+        fragLineChart = null;
+      const fragRows = [
+        {
+          date: "2025-09-19",
+          domain: "Reef A",
+          p80: 138,
+          p50: 82,
+          delta: "+18",
+          title: "Fragmentation — Reef A",
+          detail: `<div>${list([
+            "Target P80: 120 mm",
+            "Current P80: 138 mm",
+            "Current P50: 82 mm",
+            "Recommendation: Increase PF 5–8%; adjust timing",
+          ])}<hr><canvas data-chart="frag" height="120"></canvas></div>`,
+        },
+      ];
+      injectRows("tblFrag", fragRows, ["date", "domain", "p80", "p50", "delta"]);
+
+      function renderFragCharts(p80_now, p50_now, p80_opt, p50_opt) {
+        const c1 = document.getElementById("chartFragBars").getContext("2d");
+        fragBarChart && fragBarChart.destroy();
+        fragBarChart = new Chart(c1, {
+          type: "bar",
+          data: {
+            labels: ["P80", "P50"],
+            datasets: [
+              { label: "Current", data: [p80_now, p50_now] },
+              { label: "Optimized", data: [p80_opt, p50_opt] },
+            ],
+          },
+          options: { plugins: { legend: { position: "bottom" } } },
+        });
+        const c2 = document.getElementById("chartFragLine").getContext("2d");
+        const sizes = [10, 20, 40, 80, 120, 160, 200];
+        const cdfNow = sizes.map((s) => Math.min(100, Math.round(100 / (1 + Math.exp(-(s - p50_now) / 15)))));
+        const cdfOpt = sizes.map((s) => Math.min(100, Math.round(100 / (1 + Math.exp(-(s - p50_opt) / 15)))));
+        fragLineChart && fragLineChart.destroy();
+        fragLineChart = new Chart(c2, {
+          type: "line",
+          data: {
+            labels: sizes.map((s) => s + "mm"),
+            datasets: [
+              { label: "Current CDF", data: cdfNow, tension: 0.3 },
+              { label: "Optimized CDF", data: cdfOpt, tension: 0.3 },
+            ],
+          },
+          options: {
+            scales: { y: { beginAtZero: true, max: 100, title: { display: true, text: "% passing" } } },
+            plugins: { legend: { position: "bottom" } },
+          },
+        });
+      }
+      document.getElementById("formFrag").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const tgt = Number(fd.get("p80") || 120);
+        const p80_now = Math.round(tgt + (Math.random() * 40 - 20));
+        const p50_now = Math.round(p80_now * 0.6);
+        const p80_opt = Math.round(tgt + (p80_now > tgt ? -15 : -5));
+        const p50_opt = Math.round(p80_opt * 0.6);
+        document.getElementById("outFrag").innerHTML = list([
+          `Target P80: ${tgt} mm`,
+          `Current: P80 ${p80_now} mm, P50 ${p50_now} mm`,
+          `Optimized: P80 ${p80_opt} mm, P50 ${p50_opt} mm`,
+          p80_now > tgt ? "Suggestion: Increase PF 5–8% + timing adjust" : "Suggestion: Reduce PF ~5%",
+        ]);
+        renderFragCharts(p80_now, p50_now, p80_opt, p50_opt);
+        fragRows.unshift({
+          date: new Date().toISOString().slice(0, 10),
+          domain: fd.get("domain") || "Reef",
+          p80: p80_now,
+          p50: p50_now,
+          delta: (p80_now - tgt >= 0 ? "+" : "") + (p80_now - tgt),
+          title: "Fragmentation Detail",
+          detail: `<div>${list([
+            `Target P80: ${tgt} mm`,
+            `Current P80: ${p80_now} mm`,
+            `P50: ${p50_now} mm`,
+          ])}<hr><canvas data-chart="frag" height="120"></canvas></div>`,
+        });
+        injectRows("tblFrag", fragRows, ["date", "domain", "p80", "p50", "delta"]);
+      });
+
+      /* ---------- PDM RM connector + sim ---------- */
+      let pdmRmTimer = null,
+        pdmRmConnected = false,
+        pdmRmVibChart = null,
+        pdmRmHealthChart = null;
+      const pdmRmRows = [];
+      function pdmRmInject() {
+        injectRows("tblPdmRm", pdmRmRows, ["dt", "asset", "sensor", "value", "health", "wo"]);
+      }
+      function pdmRmRenderCharts(vibSeries, healthSeries) {
+        const c1 = document.getElementById("chartPdmRmVib").getContext("2d");
+        pdmRmVibChart && pdmRmVibChart.destroy();
+        pdmRmVibChart = new Chart(c1, {
+          type: "line",
+          data: {
+            labels: vibSeries.map((_, i) => i - (vibSeries.length - 1) + "s"),
+            datasets: [{ label: "Vib RMS", data: vibSeries, tension: 0.35 }],
+          },
+          options: { plugins: { legend: { position: "bottom" } } },
+        });
+        const c2 = document.getElementById("chartPdmRmHealth").getContext("2d");
+        pdmRmHealthChart && pdmRmHealthChart.destroy();
+        pdmRmHealthChart = new Chart(c2, {
+          type: "line",
+          data: {
+            labels: healthSeries.map((_, i) => i - (healthSeries.length - 1) + "s"),
+            datasets: [{ label: "Health Index (0–100)", data: healthSeries, tension: 0.35 }],
+          },
+          options: { scales: { y: { beginAtZero: true, max: 100 } }, plugins: { legend: { position: "bottom" } } },
+        });
+      }
+      function computeHealth(vib, temp, amps, oilFlag) {
+        let h = 100;
+        const vibWarn = 3.0,
+          vibCrit = 5.0,
+          tWarn = 80,
+          tCrit = 95,
+          aWarn = 1.3,
+          aCrit = 1.6;
+        if (vib > vibWarn) h -= (vib - vibWarn) * 12;
+        if (vib > vibCrit) h -= 10;
+        if (temp > tWarn) h -= (temp - tWarn) * 0.8;
+        if (temp > tCrit) h -= 8;
+        if (amps > aWarn) h -= (amps - aWarn) * 8;
+        if (amps > aCrit) h -= 6;
+        if (oilFlag) h -= 15;
+        return Math.max(0, Math.round(h));
+      }
+      let vibSeries = [2.1, 2.3, 2.5, 2.9, 3.2],
+        healthSeries = [92, 89, 87, 84, 81];
+      document.getElementById("formPdmRm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (pdmRmConnected) {
+          clearInterval(pdmRmTimer);
+          pdmRmConnected = false;
+        }
+        const fd = new FormData(e.target);
+        const asset = $('#formPDM [name="equip_id"]').value || "ASSET";
+        const every = Math.max(2, parseInt(fd.get("interval") || "5", 10)) * 1000;
+        const mode = document.querySelector('input[name="pdmRmMode"]:checked').value;
+        document.getElementById(
+          "pdmRmStatus"
+        ).innerHTML = `<span class="pill bg-success text-white">Connected</span> · ${mode.toUpperCase()} · ${
+          every / 1000
+        }s`;
+        document.getElementById(
+          "outPdmRm"
+        ).innerHTML = `<b>${asset}</b> streaming (${mode.toUpperCase()}). Work orders auto-created on sustained low health.`;
+        pdmRmConnected = true;
+        function tick() {
+          const vib = +(vibSeries.at(-1) + Math.random() * 0.25).toFixed(2);
+          const temp = Math.round(70 + Math.random() * 20);
+          const amps = +(1.0 + Math.random() * 0.8).toFixed(2);
+          const oilFlag = Math.random() < 0.08;
+          const health = computeHealth(vib, temp, amps, oilFlag);
+          vibSeries.push(vib);
+          if (vibSeries.length > 20) vibSeries.shift();
+          healthSeries.push(health);
+          if (healthSeries.length > 20) healthSeries.shift();
+          pdmRmRenderCharts(vibSeries, healthSeries);
+          let wo = "—";
+          if (health < 70) {
+            wo = "WO-" + Math.floor(Math.random() * 9000 + 1000);
+          }
+          pdmRmRows.unshift({
+            dt: new Date().toISOString().replace("T", " ").slice(0, 19),
+            asset,
+            sensor: (oilFlag ? "Oil+" : "") + "Vib/Temp/Current",
+            value: `RMS ${vib} · ${temp}°C · ${amps}x${oilFlag ? " · Oil!" : ""}`,
+            health: health + "%",
+            wo,
+            title: `Remote Telemetry — ${asset}`,
+            detail: `<div>${list([
+              `Health: ${health}%`,
+              `Vib RMS: ${vib} mm/s`,
+              `Temp: ${temp} °C`,
+              `Load: ${amps}x`,
+              oilFlag ? "Oil: particles/visc flag" : "Oil: OK",
+            ])}<hr><canvas data-chart="pdm" height="120"></canvas></div>`,
+          });
+          pdmRmInject();
+          document.getElementById("outPdmRm").innerHTML =
+            wo !== "—"
+              ? `<span class="pill bg-danger text-white">ALERT</span> ${asset}: Health ${health}% — created ${wo}`
+              : `${asset}: Health ${health}% — streaming…`;
+        }
+        tick();
+        pdmRmTimer = setInterval(tick, every);
+      });
+
+      /* ---------- Image Optimizer ---------- */
+      const pdmImgRows = [];
+      const imgCanvas = document.getElementById("imgCanvas");
+      const imgCtx = imgCanvas.getContext("2d");
+      let loadedImage = null;
+      const RECO = {
+        leak: ["Tighten/replace fittings", "Inspect seals and hoses", "Wipe and monitor for reappearance"],
+        corrosion: ["Wire-brush & treat rust", "Apply anti-corrosion coating", "Schedule repainting"],
+        crack: ["Stop & tag out if structural", "NDT inspection (UT/MT/PT)", "Replace cracked part"],
+        loose: ["Torque to spec", "Apply threadlocker", "Add lock washers"],
+        misalign: ["Laser alignment check", "Check soft foot/shimming", "Re-align couplings"],
+        overheat: ["Check load/ventilation", "Clean cooling fins/filters", "Verify lubrication grade"],
+        belt: ["Inspect belt tension & tracking", "Replace frayed belt/chain", "Check pulley wear"],
+        guard: ["Install/repair guard", "Audit LOTO compliance", "Train on safe operation"],
+        seal: ["Replace mechanical seal/packing", "Check coupling spider/insert", "Verify lubrication"],
+        idler: ["Replace seized idler", "Check pulley runout", "Align return rollers"],
+        impeller: ["Inspect impeller clearance", "Replace damaged blades", "Balance & re-commission"],
+        cavitation: ["Raise suction head/prime pump", "Open bypass/adjust valve", "Check NPSH & impeller"],
+        blockage: ["Clear chute/screen", "Add water sprays/air knocker", "Review ore size split"],
+        dust: ["Blow out motor vents", "Clean filters", "Improve dust extraction"],
+      };
+      const ASSET_DEFECTS = {
+        Pump: ["leak", "corrosion", "crack", "misalign", "overheat", "seal", "impeller", "cavitation", "dust"],
+        Fan: ["overheat", "dust", "misalign", "loose", "guard", "corrosion"],
+        Conveyor: ["belt", "idler", "misalign", "loose", "guard", "blockage", "overheat", "dust", "corrosion"],
+        Crusher: ["overheat", "corrosion", "crack", "blockage", "dust", "loose", "guard"],
+        Hoist: ["overheat", "misalign", "loose", "corrosion", "crack", "dust"],
+      };
+      const SEV = { low: "#fff176AA", med: "#ffa726AA", high: "#ef5350AA" };
+      function drawSpot(x, y, w, h, color) {
+        imgCtx.fillStyle = color;
+        imgCtx.beginPath();
+        imgCtx.roundRect(x, y, w, h, 8);
+        imgCtx.fill();
+        imgCtx.lineWidth = 1;
+        imgCtx.strokeStyle = color.replace("AA", "FF");
+        imgCtx.stroke();
+      }
+      function simulateDetections(asset, active, imgW, imgH) {
+        const pool = (ASSET_DEFECTS[asset] || Object.keys(RECO)).filter((c) => active.has(c));
+        const n = Math.max(1, Math.min(6, Math.round(2 + Math.random() * 3)));
+        const out = [];
+        for (let i = 0; i < n; i++) {
+          const cls = pool[Math.floor(Math.random() * pool.length)];
+          const conf = +(0.65 + Math.random() * 0.3).toFixed(2);
+          const sev = conf > 0.9 ? "high" : conf > 0.78 ? "med" : "low";
+          const w = Math.max(40, Math.round(imgW * (0.08 + Math.random() * 0.15)));
+          const h = Math.max(40, Math.round(imgH * (0.08 + Math.random() * 0.15)));
+          const x = Math.max(5, Math.round(Math.random() * (imgW - w - 5)));
+          const y = Math.max(5, Math.round(Math.random() * (imgH - h - 5)));
+          out.push({ cls, conf, sev, bbox: { x, y, w, h } });
+        }
+        return out;
+      }
+      function renderBase(img) {
+        const maxW = 1200,
+          maxH = 520;
+        let { width: w, height: h } = img;
+        const scale = Math.min(maxW / w, maxH / h, 1);
+        w = Math.round(w * scale);
+        h = Math.round(h * scale);
+        imgCanvas.width = w;
+        imgCanvas.height = h;
+        imgCtx.clearRect(0, 0, w, h);
+        imgCtx.drawImage(img, 0, 0, w, h);
+      }
+      document.getElementById("imgInput").addEventListener("change", (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const img = new Image();
+        img.onload = () => {
+          loadedImage = img;
+          renderBase(img);
+        };
+        img.src = URL.createObjectURL(file);
+      });
+      function severityRank(s) {
+        return s === "high" ? 3 : s === "med" ? 2 : 1;
+      }
+      function buildDetailHTML(asset, det) {
+        const items = det
+          .map((d) => {
+            const rec = (RECO[d.cls] || [])
+              .slice(0, 3)
+              .map((r) => `- ${r}`)
+              .join("<br>");
+            const label = d.cls.charAt(0).toUpperCase() + d.cls.slice(1);
+            return `<div class="mb-2"><b>${label}</b> — confidence ${Math.round(d.conf * 100)}% (${
+              d.sev
+            })<div class="small text-muted">Recommendations:</div><div class="small">${rec}</div></div>`;
+          })
+          .join("");
+        return `<div class="row g-3"><div class="col-lg-7"><div class="small text-muted mb-1">Heatmap preview:</div><canvas id="detailImg" width="${imgCanvas.width}" height="${imgCanvas.height}"></canvas></div><div class="col-lg-5"><div class="fw-bold mb-1">${asset} — Detected Findings</div>${items}</div></div>`;
+      }
+      function pdmImgInject() {
+        injectRows("tblPdmImg", pdmImgRows, ["dt", "asset", "findings", "severity"]);
+      }
+
+      document.getElementById("formPdmImg").addEventListener("submit", (e) => {
+        e.preventDefault();
+        if (!loadedImage) {
+          document.getElementById("outPdmImg").textContent = "Please choose an image first.";
+          return;
+        }
+        const fd = new FormData(e.target);
+        const asset = fd.get("img_asset_class") || "Asset";
+        const active = new Set([...document.querySelectorAll('input[name="img_classes"]:checked')].map((x) => x.value));
+        renderBase(loadedImage);
+        const det = simulateDetections(asset, active, imgCanvas.width, imgCanvas.height);
+        det.forEach((d) => drawSpot(d.bbox.x, d.bbox.y, d.bbox.w, d.bbox.h, SEV[d.sev]));
+        const worst = det.reduce((a, b) => (severityRank(b.sev) > severityRank(a.sev) ? b : a), det[0]);
+        document.getElementById("outPdmImg").innerHTML = `<span class="pill bg-warning text-dark">Findings: ${
+          det.length
+        }</span> · Max severity: <b>${worst.sev.toUpperCase()}</b><div class="small text-muted">Click “View” in history for detailed confidences & recommendations.</div>`;
+        const dt = new Date().toISOString().replace("T", " ").slice(0, 19);
+        const snapshot = imgCanvas.toDataURL("image/png");
+        pdmImgRows.unshift({
+          dt,
+          asset,
+          findings: det.map((d) => d.cls).join(", "),
+          severity: worst.sev.toUpperCase(),
+          title: `Image Inspection — ${asset}`,
+          snapshot,
+          detail: buildDetailHTML(asset, det),
+        });
+        pdmImgInject();
+      });
+
+      /* ---------- Control-Room Maintenance & Parts ---------- */
+      const maintRows = [];
+      const partsRows = [];
+      const reqRows = [];
+      const inventory = [
+        { sku: "6206-2RS", name: "Deep Groove Bearing 6206-2RS", stock: 8, cost: 22.0 },
+        { sku: "B42", name: "V-belt B42", stock: 3, cost: 18.5 },
+        { sku: "SEAL-KIT-06", name: "Mechanical Seal Kit #06", stock: 1, cost: 95.0 },
+        { sku: "IDLER-178", name: "Conveyor Idler 178mm", stock: 12, cost: 45.0 },
+        { sku: "COUP-SPIDER-A", name: "Coupling Spider Type A", stock: 5, cost: 12.75 },
+        { sku: "GUARD-MESH", name: "Mesh Guard Panel 400x300", stock: 2, cost: 28.0 },
+        { sku: "BOLT-M12", name: "Bolt M12 x 35 (10.9)", stock: 60, cost: 0.35 },
+        { sku: "LOCTITE-243", name: "Threadlocker 243", stock: 6, cost: 9.9 },
+        { sku: "GREASE-NLGI2", name: "Grease NLGI #2 400g", stock: 18, cost: 4.2 },
+        { sku: "FILTER-EXT", name: "Motor Dust Filter (ext.)", stock: 10, cost: 6.5 },
+        { sku: "IMPELLER-PMP", name: "Pump Impeller – Medium", stock: 0, cost: 180.0 },
+        { sku: "SCREEN-CHUTE", name: "Chute Screen Panel", stock: 4, cost: 55.0 },
+      ];
+      const defectToParts = {
+        leak: [
+          { sku: "SEAL-KIT-06", qty: 1 },
+          { sku: "GREASE-NLGI2", qty: 2 },
+        ],
+        loose: [
+          { sku: "BOLT-M12", qty: 8 },
+          { sku: "LOCTITE-243", qty: 1 },
+        ],
+        belt: [{ sku: "B42", qty: 1 }],
+        idler: [{ sku: "IDLER-178", qty: 2 }],
+        blockage: [{ sku: "SCREEN-CHUTE", qty: 2 }],
+        corrosion: [{ sku: "GUARD-MESH", qty: 1 }],
+        misalign: [{ sku: "COUP-SPIDER-A", qty: 1 }],
+        guard: [{ sku: "GUARD-MESH", qty: 1 }],
+        impeller: [{ sku: "IMPELLER-PMP", qty: 1 }],
+        dust: [{ sku: "FILTER-EXT", qty: 2 }],
+        crack: [{ sku: "GUARD-MESH", qty: 1 }],
+        overheat: [
+          { sku: "GREASE-NLGI2", qty: 2 },
+          { sku: "FILTER-EXT", qty: 1 },
+        ],
+        seal: [{ sku: "SEAL-KIT-06", qty: 1 }],
+        cavitation: [{ sku: "IMPELLER-PMP", qty: 1 }],
+      };
+      function pill(color, text) {
+        return `<span class="pill ${color} text-white">${text}</span>`;
+      }
+      function money(v) {
+        return "$" + v.toFixed(2);
+      }
+      function nowStr() {
+        return new Date().toISOString().replace("T", " ").slice(0, 19);
+      }
+      function maintInject() {
+        injectRows("tblMaint", maintRows, ["start", "asset", "typeprio", "crew", "status", "notif"]);
+      }
+      function partsInject() {
+        const tb = document.getElementById("tblParts");
+        let total = 0;
+        tb.innerHTML = partsRows
+          .map((p) => {
+            const inv = inventory.find((i) => i.sku === p.sku) || { stock: 0, cost: 0 };
+            const ext = p.qty * inv.cost;
+            total += ext;
+            const enough = inv.stock >= p.qty;
+            const btn = enough
+              ? `<button class="btn btn-sm btn-outline-secondary" disabled>In stock</button>`
+              : `<button class="btn btn-sm btn-outline-primary" onclick="requestPart('${p.wo}','${p.sku}',${p.qty})">Request</button>`;
+            return `<tr><td>${p.sku}</td><td>${inv.name || "-"}</td><td>${p.qty}</td><td>${inv.stock}</td><td>${money(
+              inv.cost
+            )}</td><td>${money(ext)}</td><td>${btn}</td></tr>`;
+          })
+          .join("");
+        document.getElementById("partsTotal").textContent = money(total);
+      }
+      function reqInject() {
+        injectRows("tblReqs", reqRows, ["dt", "wo", "sku", "name", "qty", "status"]);
+      }
+      function refreshWOSelect() {
+        const sel = document.getElementById("partsWO");
+        const options = maintRows.map((r) => `<option value="${r.wo}">${r.wo} — ${r.asset} (${r.mtype})</option>`);
+        sel.innerHTML = `<option value="" disabled selected>Select WO…</option>` + options.join("");
+      }
+      function sendNotification(channels, msg) {
+        const ch = channels.join(" · ");
+        document.getElementById("maintStatus").innerHTML = `${pill("bg-success", "Notify")} ${ch} — ${msg}`;
+      }
+
+      let maintTimer = null;
+      document.getElementById("formMaint").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fd = new FormData(e.target);
+        const asset = fd.get("asset").trim();
+        const mtype = fd.get("mtype");
+        const prio = fd.get("prio");
+        const start = fd.get("start");
+        const dur = Math.max(1, parseInt(fd.get("dur") || "4", 10));
+        const crew = fd.get("crew") || "Team";
+        const scope = fd.get("scope") || "";
+        const channels = [...document.querySelectorAll('input[name="notify"]:checked')].map((x) => x.value);
+        const wo = "WO-" + Math.floor(Math.random() * 9000 + 1000);
+        const row = {
+          wo,
+          asset,
+          mtype,
+          prio,
+          crew,
+          scope,
+          start,
+          end: new Date(new Date(start).getTime() + dur * 3600 * 1000).toISOString().slice(0, 16).replace("T", " "),
+          status: pill("bg-secondary", "Scheduled"),
+          notif: channels.join(", "),
+          startISO: new Date(start).toISOString(),
+          typeprio: `${mtype} / <b>${prio}</b>`,
+          title: `Scheduled Maintenance — ${asset}`,
+          detail: `<div>${list([
+            `WO: ${wo}`,
+            `Asset: ${asset}`,
+            `Type: ${mtype}`,
+            `Priority: ${prio}`,
+            `Crew: ${crew}`,
+            `Start: ${start}`,
+            `Duration: ${dur}h`,
+            `Scope: ${scope}`,
+            `Notify: ${channels.join(" · ")}`,
+          ])}</div>`,
+        };
+        row.start = start.replace("T", " ");
+        maintRows.unshift(row);
+        maintInject();
+        refreshWOSelect();
+        sendNotification(channels, `${asset} scheduled (${mtype}) — ${row.start} for ${dur}h — ${wo}`);
+        if (maintTimer) clearInterval(maintTimer);
+        maintTimer = setInterval(updateStatuses, 10000);
+      });
+
+      /* ========= Parts Analytics (Management) ========= */
+      let partsFreqChart = null;
+
+      // Build aggregate array from reqRows with optional date filter
+      function makePartsAggregate(fromDateStr, toDateStr) {
+        const fromTs = fromDateStr ? new Date(fromDateStr + "T00:00:00").getTime() : -Infinity;
+        const toTs = toDateStr ? new Date(toDateStr + "T23:59:59").getTime() : Infinity;
+
+        // index inventory by sku for fast lookup
+        const invIdx = Object.fromEntries((inventory || []).map((i) => [i.sku, i]));
+
+        const agg = new Map(); // sku -> record
+
+        (reqRows || []).forEach((row) => {
+          // row.dt like "2025-10-03 12:34:56"
+          const ts = new Date(row.dt.replace(" ", "T")).getTime();
+          if (isNaN(ts) || ts < fromTs || ts > toTs) return;
+
+          const sku = row.sku;
+          if (!agg.has(sku)) {
+            const inv = invIdx[sku] || {};
+            agg.set(sku, {
+              sku,
+              name: row.name || inv.name || "-",
+              requests: 0,
+              qty: 0,
+              pending: 0,
+              spend: 0,
+              last: "—",
+              _lastTs: -1,
+              _samples: [], // keep a few for the modal View
+            });
+          }
+          const rec = agg.get(sku);
+          rec.requests += 1;
+          rec.qty += Number(row.qty || 0);
+          if ((row.status || "").toLowerCase().includes("request")) rec.pending += 1;
+          const unit = invIdx[sku]?.cost || 0;
+          rec.spend += unit * Number(row.qty || 0);
+          if (ts > rec._lastTs) {
+            rec._lastTs = ts;
+            rec.last = row.dt;
+          }
+          if (rec._samples.length < 5) rec._samples.push({ dt: row.dt, wo: row.wo, qty: row.qty, status: row.status });
+        });
+
+        // to array, sort by requests desc then qty desc
+        const out = Array.from(agg.values()).sort((a, b) => b.requests - a.requests || b.qty - a.qty);
+        // decorate for table + detail modal
+        out.forEach((r) => {
+          r.spend = money(r.spend);
+          r.title = `Part KPI — ${r.sku}`;
+          r.detail = `
+      <div class="row g-3">
+        <div class="col-md-6">
+          <b>Overview</b>
+          ${list([
+            `SKU: ${r.sku}`,
+            `Part: ${r.name}`,
+            `Requests: ${r.requests}`,
+            `Total Qty: ${r.qty}`,
+            `Pending: ${r.pending}`,
+            `Est Spend: ${r.spend}`,
+            `Last Requested: ${r.last}`,
+          ])}
+        </div>
+        <div class="col-md-6">
+          <b>Recent Samples</b>
+          ${list(r._samples.map((s) => `${s.dt} — ${s.wo} — qty ${s.qty} — ${s.status}`))}
+          <hr>
+          <canvas data-chart="parts-mini" height="120"></canvas>
+        </div>
+      </div>`;
+        });
+
+        return out;
+      }
+
+      // Inject aggregate table
+      function partsAggInject(rows) {
+        // Use the existing single-encode injector (adds a View button)
+        injectRows("tblPartsAgg", rows, ["sku", "name", "requests", "qty", "pending", "spend", "last"]);
+      }
+
+      // Render frequency chart
+      function partsAggChart(rows) {
+        const labels = rows.map((r) => (r.name.length > 24 ? r.name.slice(0, 24) + "…" : r.name));
+        const values = rows.map((r) => r.requests);
+        const ctx = document.getElementById("chartPartsFreq").getContext("2d");
+        partsFreqChart && partsFreqChart.destroy();
+        partsFreqChart = new Chart(ctx, {
+          type: "bar",
+          data: { labels, datasets: [{ label: "Requests", data: values }] },
+          options: { plugins: { legend: { display: false } } },
+        });
+      }
+
+      // Recompute & render everything
+      function partsAggRecompute() {
+        const from = document.getElementById("partsAggFrom")?.value || "";
+        const to = document.getElementById("partsAggTo")?.value || "";
+        const rows = makePartsAggregate(from, to);
+        partsAggInject(rows);
+        partsAggChart(rows.slice(0, 12)); // show top 12 on the chart
+      }
+
+      // CSV export
+      function partsAggExportCSV() {
+        const from = document.getElementById("partsAggFrom")?.value || "";
+        const to = document.getElementById("partsAggTo")?.value || "";
+        const rows = makePartsAggregate(from, to);
+        const header = ["SKU", "Part", "Requests", "Total Qty", "Pending", "Est Spend", "Last Requested"];
+        const lines = [header.join(",")].concat(
+          rows.map((r) =>
+            [
+              r.sku,
+              `"${(r.name || "").replace(/"/g, '""')}"`,
+              r.requests,
+              r.qty,
+              r.pending,
+              r.spend.replace("$", ""),
+              `"${r.last}"`,
+            ].join(",")
+          )
+        );
+        const blob = new Blob([lines.join("\n")], { type: "text/csv" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = `parts-requests-${from || "all"}-${to || "all"}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      function updateStatuses() {
+        const now = Date.now();
+        maintRows.forEach((r) => {
+          const start = new Date(r.startISO).getTime();
+          const endTs = new Date(r.end + "Z").getTime();
+          if (now >= start && now < endTs) {
+            r.status = pill("bg-info", "In-Progress");
+          } else if (now >= endTs) {
+            if (r.status.indexOf("Completed") === -1) r.status = pill("bg-warning", "Overdue");
+          } else {
+            const mins = Math.round((start - now) / 60000);
+            if (mins <= 30 && r.status.indexOf("Due Soon") === -1) {
+              r.status = pill("bg-primary", "Due Soon");
+              sendNotification(r.notif.split(", "), `${r.asset} due in ~${mins} min — ${r.wo}`);
+            }
+          }
+        });
+        maintInject();
+      }
+
+      document.getElementById("formParts").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const wo = (document.getElementById("partsWO").value || "").trim();
+        if (!wo) {
+          document.getElementById("maintStatus").innerHTML = `${pill("bg-danger", "Error")} choose a WO`;
+          return;
+        }
+        const dsel = [...document.querySelectorAll('input[name="dcls"]:checked')].map((x) => x.value);
+        const wanted = {};
+        dsel.forEach((d) => {
+          (defectToParts[d] || []).forEach((p) => {
+            wanted[p.sku] = (wanted[p.sku] || 0) + p.qty;
+          });
+        });
+        partsRows.length = 0;
+        Object.keys(wanted).forEach((sku) => partsRows.push({ wo, sku, qty: wanted[sku] }));
+        partsInject();
+      });
+
+      window.requestPart = function (wo, sku, qty) {
+        const inv = inventory.find((i) => i.sku === sku);
+        reqRows.unshift({
+          dt: nowStr(),
+          wo,
+          sku,
+          name: inv?.name || "-",
+          qty,
+          status: "Requested",
+          title: `Part Request — ${wo}`,
+          detail: `<div>${list([
+            `WO: ${wo}`,
+            `SKU: ${sku}`,
+            `Part: ${inv?.name || "-"}`,
+            `Qty: ${qty}`,
+            `Unit Cost: ${money(inv?.cost || 0)}`,
+          ])}</div>`,
+        });
+        reqInject();
+        document.getElementById("maintStatus").innerHTML = `${pill(
+          "bg-success",
+          "Request"
+        )} ${wo} — ${sku} × ${qty} sent to Stores`;
+        // Refresh management view after each new request
+        partsAggRecompute();
+      };
+
+      /* ---------------------------
+         NEW: Historical seeds + wiring
+      --------------------------- */
+      (function seedHistoryAndWire() {
+        if (window._seededPartsHistory) return;
+        window._seededPartsHistory = true;
+
+        const fmt = (d) => new Date(d).toISOString().replace("T", " ").slice(0, 19);
+        const daysAgo = (n) => {
+          const d = new Date();
+          d.setDate(d.getDate() - n);
+          return fmt(d);
+        };
+
+        // Seed historical WOs if board is empty
+        if (maintRows.length === 0) {
+          const base = [
+            {
+              wo: "WO-5460",
+              asset: "PUMP-12-07",
+              mtype: "Planned Service",
+              prio: "Medium",
+              crew: "Team A",
+              scope: "Seal kit & grease",
+              startISO: new Date(Date.now() - 8 * 24 * 3600e3).toISOString(),
+              start: daysAgo(8),
+              end: fmt(new Date(Date.now() - 8 * 24 * 3600e3 + 4 * 3600e3)),
+              notif: "In-app, Email",
+            },
+            {
+              wo: "WO-5591",
+              asset: "CONV-22-B",
+              mtype: "Corrective Repair",
+              prio: "High",
+              crew: "Conveyor Crew",
+              scope: "Replace idler & belt tracking",
+              startISO: new Date(Date.now() - 14 * 24 * 3600e3).toISOString(),
+              start: daysAgo(14),
+              end: fmt(new Date(Date.now() - 14 * 24 * 3600e3 + 6 * 3600e3)),
+              notif: "In-app, Email, SMS",
+            },
+            {
+              wo: "WO-5638",
+              asset: "FAN-07-NE",
+              mtype: "Inspection",
+              prio: "Low",
+              crew: "Team B",
+              scope: "Thermal check & dust clean",
+              startISO: new Date(Date.now() - 3 * 24 * 3600e3).toISOString(),
+              start: daysAgo(3),
+              end: fmt(new Date(Date.now() - 3 * 24 * 3600e3 + 2 * 3600e3)),
+              notif: "In-app",
+            },
+            {
+              wo: "WO-5712",
+              asset: "CRUSH-3",
+              mtype: "Overhaul",
+              prio: "Critical",
+              crew: "Plant Maint",
+              scope: "Screen panel & guard audit",
+              startISO: new Date(Date.now() - 28 * 24 * 3600e3).toISOString(),
+              start: daysAgo(28),
+              end: fmt(new Date(Date.now() - 28 * 24 * 3600e3 + 8 * 3600e3)),
+              notif: "In-app, Email",
+            },
+          ];
+          base.forEach((r) => {
+            r.typeprio = `${r.mtype} / <b>${r.prio}</b>`;
+            r.status = pill("bg-secondary", "Scheduled");
+            r.title = `Scheduled Maintenance — ${r.asset}`;
+            r.detail = `<div>${list([
+              `WO: ${r.wo}`,
+              `Asset: ${r.asset}`,
+              `Type: ${r.mtype}`,
+              `Priority: ${r.prio}`,
+              `Crew: ${r.crew}`,
+              `Start: ${r.start}`,
+              `Duration: ${(new Date(r.end + "Z").getTime() - new Date(r.startISO).getTime()) / 3600000}h`,
+              `Scope: ${r.scope}`,
+              `Notify: ${r.notif}`,
+            ])}</div>`;
+            maintRows.push(r);
+          });
+          maintInject();
+          refreshWOSelect();
+        }
+
+        // Seed historical parts requests (past ~5 weeks)
+        const invIdx = Object.fromEntries(inventory.map((i) => [i.sku, i]));
+        const seedReqs = [
+          [daysAgo(35), "WO-5712", "SCREEN-CHUTE", 4, "Issued"],
+          [daysAgo(33), "WO-5712", "GUARD-MESH", 2, "Issued"],
+          [daysAgo(29), "WO-5712", "BOLT-M12", 24, "Issued"],
+          [daysAgo(20), "WO-5591", "IDLER-178", 6, "Backorder"],
+          [daysAgo(19), "WO-5591", "B42", 2, "Issued"],
+          [daysAgo(18), "WO-5591", "BOLT-M12", 16, "Issued"],
+          [daysAgo(12), "WO-5460", "SEAL-KIT-06", 1, "Issued"],
+          [daysAgo(12), "WO-5460", "GREASE-NLGI2", 4, "Issued"],
+          [daysAgo(7), "WO-5638", "FILTER-EXT", 2, "Issued"],
+          [daysAgo(6), "WO-5638", "GREASE-NLGI2", 2, "Issued"],
+          [daysAgo(4), "WO-5591", "IDLER-178", 4, "Requested"],
+          [daysAgo(3), "WO-5638", "FILTER-EXT", 2, "Requested"],
+          [daysAgo(2), "WO-5460", "SEAL-KIT-06", 1, "Requested"],
+          [daysAgo(1), "WO-5591", "B42", 1, "Requested"],
+        ];
+        seedReqs.forEach(([dt, wo, sku, qty, status]) => {
+          const inv = invIdx[sku] || {};
+          reqRows.push({
+            dt,
+            wo,
+            sku,
+            name: inv.name || "-",
+            qty,
+            status,
+            title: `Part Request — ${wo}`,
+            detail: `<div>${list([
+              `WO: ${wo}`,
+              `SKU: ${sku}`,
+              `Part: ${inv.name || "-"}`,
+              `Qty: ${qty}`,
+              `Unit Cost: ${money(inv.cost || 0)}`,
+              `Status: ${status}`,
+              `Requested: ${dt}`,
+            ])}</div>`,
+          });
+        });
+        reqInject();
+
+        // Wire up management view buttons
+        document.getElementById("partsAggApply")?.addEventListener("click", partsAggRecompute);
+        document.getElementById("partsAggExport")?.addEventListener("click", partsAggExportCSV);
+
+        // Initial compute
+        partsAggRecompute();
+      })();
+
+      // Seed tables on load (kept from your original)
+      maintInject();
+      partsInject();
+      reqInject();
+    </script>
+
+    <script>
+      /* ====================== HSE PTO Scanner — Logic (Per-Category Severity, lint-safe) ====================== */
+      /* Uses existing helpers: $, list(), injectRows(), openDetail() */
+
+      (function () {
+        // ---------------- Keyword dictionaries (extend anytime) ----------------
+        var CAT_KEYWORDS = {
+          "Fall of Ground / Support": [
+            "unsupported roof",
+            "loose rock",
+            "rockfall",
+            "fall of ground",
+            "f.o.g",
+            "support",
+            "rockbolt",
+            "prop",
+            "strata",
+            "timber",
+            "mesh",
+          ],
+          "Winch / Lifting / Hoist": [
+            "winch",
+            "hoist",
+            "lifting",
+            "chain block",
+            "sling",
+            "shackle",
+            "overhead crane",
+            "load test",
+            "rigging",
+          ],
+          "Ventilation / Air Quality": [
+            "ventilation",
+            "airflow",
+            "secondary fan",
+            "air quantity",
+            "air velocity",
+            "oxygen",
+            "o2",
+            "co2",
+            "gas monitor",
+            "dust sample",
+            "silica",
+          ],
+          "Explosives / Blasting": [
+            "explosive",
+            "emulsion",
+            "detonator",
+            "primer",
+            "fuse",
+            "charging",
+            "stemming",
+            "misfire",
+            "blast",
+            "guarding blast",
+          ],
+          "Electrical / Lockout": [
+            "electrical",
+            "lockout",
+            "isolation",
+            "live cable",
+            "arc flash",
+            "transformer",
+            "substation",
+            "earth leakage",
+            "trailing cable",
+          ],
+          "Machinery Guarding": [
+            "unguarded",
+            "guard missing",
+            "pinch point",
+            "nip point",
+            "moving parts",
+            "interlock",
+            "guard",
+          ],
+          "Slip / Trip / Fall (STF)": [
+            "spill",
+            "slippery",
+            "housekeeping",
+            "trip hazard",
+            "uneven floor",
+            "handrail",
+            "walkway",
+          ],
+          "Confined Space": ["confined space", "permit required", "entry permit", "gas test", "attendant"],
+          "Fire / Hot Work": ["fire", "flammable", "hot work", "spark", "extinguisher", "hydrant", "fire watch"],
+          "Gases / Hazardous Atmosphere": ["h2s", "methane", "co", "gas alarm", "toxic gas"],
+          "Noise / Vibration": ["noise", "vibration", "db(a)", "hand-arm vibration", "whole-body vibration"],
+          Illumination: ["illumination", "lux", "lighting", "lamp"],
+          "Chemicals / Handling": ["chemical", "acid", "caustic", "reagent", "msds", "sds", "spill kit"],
+          "PPE Non-Compliance": [
+            "no ppe",
+            "missing ppe",
+            "hard hat",
+            "gloves",
+            "goggles",
+            "face shield",
+            "respirator",
+            "steel toe",
+          ],
+          "Vehicle / Mobile Equipment": [
+            "ldv",
+            "locomotive",
+            "loader",
+            "haul truck",
+            "traffic",
+            "spotter",
+            "reversing alarm",
+          ],
+          "Water / Inundation": ["inundation", "flood", "sump overflow", "water barrier", "dewatering"],
+          "Heat Stress / Thermal": ["heat stress", "wbgt", "temperature high", "heat exhaustion", "heat stroke"],
+          "Ergonomics / Manual Handling": ["manual handling", "ergonomic", "musculoskeletal", "overexertion", "lift"],
+        };
+
+        // Per-category severity cues (A=Critical, B=High, C=Moderate)
+        var CATEGORY_SEV = {
+          "Fall of Ground / Support": {
+            A: ["unsupported roof", "loose rock at brow", "fall of ground", "red tag"],
+            B: ["poor support", "mesh damaged", "scaling required"],
+            C: ["monitor strata", "check support"],
+          },
+          "Winch / Lifting / Hoist": {
+            A: ["uncontrolled winch", "load not secured", "overhead crane without exclusion", "failed rigging"],
+            B: ["sling wear", "shackle inspection pending", "suspended load unattended"],
+            C: ["minor lift", "tag lines used"],
+          },
+          "Ventilation / Air Quality": {
+            A: ["oxygen deficiency", "o2 low", "fan tripped with personnel inside"],
+            B: ["ventilation low", "dust sample elevated"],
+            C: ["check air quantity", "change filter"],
+          },
+          "Explosives / Blasting": {
+            A: ["misfire", "unrecovered detonator", "live explosive in face"],
+            B: ["primer count mismatch", "blast guarding inadequate"],
+            C: ["stale explosives paperwork"],
+          },
+          "Electrical / Lockout": {
+            A: ["live cable exposed", "isolation missing", "arc flash exposure"],
+            B: ["incomplete signage", "panel open", "damaged trailing cable"],
+            C: ["awaiting isolation verification"],
+          },
+          "Machinery Guarding": {
+            A: ["unguarded nip point with access", "guard missing during operation"],
+            B: ["guard loose", "interlock defective"],
+            C: ["guard inspection due"],
+          },
+          "Slip / Trip / Fall (STF)": {
+            A: ["unprotected edge height", "fall from height"],
+            B: ["spill on uneven floor", "trip hazard hose"],
+            C: ["housekeeping ticket raised"],
+          },
+          "Confined Space": {
+            A: ["entry without permit", "oxygen deficiency alarm"],
+            B: ["gas test overdue", "attendant absent"],
+            C: ["permit preparation"],
+          },
+          "Fire / Hot Work": {
+            A: ["active fire", "no fire watch during hot work"],
+            B: ["extinguisher overdue", "sparks near flammables"],
+            C: ["hot work planned"],
+          },
+          "Gases / Hazardous Atmosphere": {
+            A: ["h2s high", "co high", "gas alarm active"],
+            B: ["methane trending up", "repeat alarm"],
+            C: ["calibration due"],
+          },
+          "Noise / Vibration": {
+            A: [">100 db(a) without ppe", "vibration causing injury"],
+            B: [">85 db(a)", "hand-arm vibration warning"],
+            C: ["monitor noise"],
+          },
+          Illumination: {
+            A: ["work in darkness"],
+            B: ["illumination below 150 lux"],
+            C: ["temporary lighting adequate"],
+          },
+          "Chemicals / Handling": {
+            A: ["major chemical spill", "caustic exposure"],
+            B: ["spill at dosing skid", "no sds available"],
+            C: ["spill kit staged", "minor drip"],
+          },
+          "PPE Non-Compliance": {
+            A: ["no respirator in toxic zone", "no hard hat in fall zone"],
+            B: ["goggles missing", "hearing protection not worn"],
+            C: ["ppe reminder"],
+          },
+          "Vehicle / Mobile Equipment": {
+            A: ["reversing without spotter in pedestrian area"],
+            B: ["reversing alarm intermittent", "traffic control incomplete"],
+            C: ["speeding complaint"],
+          },
+          "Water / Inundation": {
+            A: ["inundation imminent", "sump overflow with personnel"],
+            B: ["sump overflow risk rising", "pump tripped"],
+            C: ["dewatering planned"],
+          },
+          "Heat Stress / Thermal": {
+            A: ["heat stroke symptoms", "wbgt extreme"],
+            B: ["wbgt high", "temperature elevated"],
+            C: ["monitor wbgt"],
+          },
+          "Ergonomics / Manual Handling": {
+            A: ["musculoskeletal injury occurred"],
+            B: ["overexertion lifting 35 kg", "overexertion lifting 45 kg", "no mechanical aid"],
+            C: ["awkward posture observed"],
+          },
+          "General / Other": { A: [], B: [], C: [] },
+        };
+
+        // Phrases that reduce severity one step if present
+        var REDUCERS = [
+          "area barricaded",
+          "isolation in progress",
+          "temporary lamps placed",
+          "ppe provided",
+          "toolbox talk completed",
+        ];
+
+        var SEV_LABEL = { A: "Critical", B: "High", C: "Moderate" };
+
+        // ---------------- State ----------------
+        var scanLog = []; // table rows
+        var chartDaily = null;
+        var chartCats = null;
+
+        // ---------------- Utils ----------------
+        function normalize(t) {
+          return (t || "").toLowerCase();
+        }
+        function containsAny(text, arr) {
+          return arr.some(function (k) {
+            return text.indexOf(k) !== -1;
+          });
+        }
+
+        // Decide severity for ONE category from the text
+        function severityForCategory(text, category) {
+          var t = normalize(text);
+          var cues = CATEGORY_SEV[category] || CATEGORY_SEV["General / Other"];
+          var sev = "C";
+          if (containsAny(t, cues.A)) sev = "A";
+          else if (containsAny(t, cues.B)) sev = "B";
+          else if (containsAny(t, cues.C)) sev = "C";
+          if (sev !== "C" && containsAny(t, REDUCERS)) sev = sev === "A" ? "B" : "C";
+          return sev;
+        }
+
+        // Return array of findings: [{cat, sev}]
+        function extractFindings(text) {
+          var t = normalize(text);
+          var out = [];
+          Object.keys(CAT_KEYWORDS).forEach(function (cat) {
+            var keys = CAT_KEYWORDS[cat];
+            if (containsAny(t, keys)) out.push({ cat: cat, sev: severityForCategory(t, cat) });
+          });
+          if (out.length === 0) out.push({ cat: "General / Other", sev: "C" });
+          return out;
+        }
+
+        // Compact list of matched keywords (for the log UI)
+        function matchedKeywords(text) {
+          var t = normalize(text);
+          var bag = {};
+          Object.keys(CAT_KEYWORDS).forEach(function (k) {
+            CAT_KEYWORDS[k].forEach(function (word) {
+              if (t.indexOf(word) !== -1) bag[word] = 1;
+            });
+          });
+          Object.keys(CATEGORY_SEV).forEach(function (cat) {
+            ["A", "B", "C"].forEach(function (s) {
+              (CATEGORY_SEV[cat][s] || []).forEach(function (word) {
+                if (t.indexOf(word) !== -1) bag[word] = 1;
+              });
+            });
+          });
+          var arr = Object.keys(bag).slice(0, 8);
+          return arr.join(", ");
+        }
+
+        // ---------------- Injectors ----------------
+        function injectScanLog() {
+          injectRows("tblHseScanLog", scanLog, ["dtShift", "area", "sev", "cat", "kw"]);
+        }
+
+        function recomputeOverview() {
+          // Daily rollup
+          var byDate = {};
+          scanLog.forEach(function (r) {
+            if (!byDate[r.date]) byDate[r.date] = { A: 0, B: 0, C: 0, total: 0, samples: [] };
+            var d = byDate[r.date];
+            d[r.sev] += 1;
+            d.total += 1;
+            if (d.samples.length < 5) d.samples.push(r);
+          });
+          var dailyRows = Object.keys(byDate)
+            .sort()
+            .map(function (date) {
+              var v = byDate[date];
+              return {
+                date: date,
+                A: v.A,
+                B: v.B,
+                C: v.C,
+                total: v.total,
+                title: "Daily Hazards — " + date,
+                detail:
+                  "<div><b>" +
+                  date +
+                  "</b>" +
+                  list(["A (Critical): " + v.A, "B (High): " + v.B, "C (Moderate): " + v.C, "Total: " + v.total]) +
+                  '<hr><canvas data-chart="hse" height="120"></canvas></div>',
+              };
+            });
+          injectRows("tblHseDaily", dailyRows, ["date", "A", "B", "C", "total"]);
+
+          // Category rollup
+          var byCat = {};
+          scanLog.forEach(function (r) {
+            if (!byCat[r.cat]) byCat[r.cat] = { A: 0, B: 0, C: 0, total: 0, samples: [] };
+            var c = byCat[r.cat];
+            c[r.sev] += 1;
+            c.total += 1;
+            if (c.samples.length < 5) c.samples.push(r);
+          });
+          var catKeys = Object.keys(byCat).sort(function (a, b) {
+            return byCat[b].total - byCat[a].total;
+          });
+          var catRows = catKeys.map(function (cat) {
+            var v = byCat[cat];
+            return {
+              cat: cat,
+              A: v.A,
+              B: v.B,
+              C: v.C,
+              total: v.total,
+              title: "Category — " + cat,
+              detail:
+                "<div><b>" +
+                cat +
+                "</b>" +
+                list(["A: " + v.A, "B: " + v.B, "C: " + v.C, "Total: " + v.total]) +
+                '<hr><canvas data-chart="hse" height="120"></canvas></div>',
+            };
+          });
+          injectRows("tblHseCats", catRows, ["cat", "A", "B", "C", "total"]);
+
+          // Charts
+          var labelsDaily = dailyRows.map(function (r) {
+            return r.date;
+          });
+          var A = dailyRows.map(function (r) {
+            return r.A;
+          });
+          var B = dailyRows.map(function (r) {
+            return r.B;
+          });
+          var C = dailyRows.map(function (r) {
+            return r.C;
+          });
+
+          var ctx1 = document.getElementById("chartHseDaily").getContext("2d");
+          if (chartDaily) chartDaily.destroy();
+          chartDaily = new Chart(ctx1, {
+            type: "bar",
+            data: {
+              labels: labelsDaily,
+              datasets: [
+                { label: "A (Critical)", data: A },
+                { label: "B (High)", data: B },
+                { label: "C (Moderate)", data: C },
+              ],
+            },
+            options: { plugins: { legend: { position: "bottom" } }, responsive: true },
+          });
+
+          var topCats = catRows.slice(0, 10);
+          var ctx2 = document.getElementById("chartHseCats").getContext("2d");
+          if (chartCats) chartCats.destroy();
+          chartCats = new Chart(ctx2, {
+            type: "bar",
+            data: {
+              labels: topCats.map(function (r) {
+                return r.cat;
+              }),
+              datasets: [
+                {
+                  label: "A",
+                  data: topCats.map(function (r) {
+                    return r.A;
+                  }),
+                },
+                {
+                  label: "B",
+                  data: topCats.map(function (r) {
+                    return r.B;
+                  }),
+                },
+                {
+                  label: "C",
+                  data: topCats.map(function (r) {
+                    return r.C;
+                  }),
+                },
+              ],
+            },
+            options: { indexAxis: "y", plugins: { legend: { position: "bottom" } } },
+          });
+        }
+
+        // ---------------- CSV export ----------------
+        function exportCSV() {
+          var header = ["date", "shift", "area", "severity", "category", "keywords", "excerpt"];
+          var lines = [header.join(",")].concat(
+            scanLog.map(function (r) {
+              return [
+                r.date,
+                r.shift,
+                '"' + String(r.area || "").replace(/"/g, '""') + '"',
+                r.sev,
+                '"' + String(r.cat).replace(/"/g, '""') + '"',
+                '"' + String(r.kw).replace(/"/g, '""') + '"',
+                '"' +
+                  String(r.excerpt || "")
+                    .replace(/"/g, '""')
+                    .slice(0, 160) +
+                  '"',
+              ].join(",");
+            })
+          );
+          var blob = new Blob([lines.join("\n")], { type: "text/csv" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "hse_pto_scans.csv";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+
+        // ---------------- Seed sample PTOs ----------------
+        function seedSamples() {
+          var samples = [
+            {
+              date: offset(-6),
+              shift: "Night",
+              area: "Inactive Tunnel 4W",
+              text: "Unsupported roof noted near panel; loose rock - fall of ground risk. Red tag issued. Rockbolts required.",
+            },
+            {
+              date: offset(-4),
+              shift: "Day",
+              area: "Plant Yard NE",
+              text: "Unguarded nip point on conveyor tail. Missing guard; exposed blade. Lockout pending.",
+            },
+            {
+              date: offset(-3),
+              shift: "Night",
+              area: "22 Level South",
+              text: "Oxygen deficiency alarm on gas monitor; ventilation quantity low; secondary fan tripped.",
+            },
+            {
+              date: offset(-2),
+              shift: "Day",
+              area: "Magazine Access",
+              text: "Explosives primer recovered after blast - suspected misfire. Guarding blast area extended.",
+            },
+            {
+              date: offset(-1),
+              shift: "Day",
+              area: "Workshop A",
+              text: "Manual handling of heavy pumps causing ergonomic strain; housekeeping: spill on floor; PPE gloves missing.",
+            },
+          ];
+          samples.forEach(function (s) {
+            processScan(s.text, s.date, s.area, s.shift);
+          });
+          injectScanLog();
+          recomputeOverview();
+          $("#hseScanStatus").innerHTML = '<span class="pill bg-success text-white">Seeded</span>';
+        }
+        function offset(days) {
+          var d = new Date();
+          d.setDate(d.getDate() + days);
+          return d.toISOString().slice(0, 10);
+        }
+
+        // ---------------- Main handler (per-category severity) ----------------
+        function processScan(text, dateStr, area, shift) {
+          var kw = matchedKeywords(text);
+          var findings = extractFindings(text); // [{cat, sev}]
+          findings.forEach(function (f) {
+            var safeExcerpt = String(text || "")
+              .replace(/</g, "&lt;")
+              .slice(0, 600);
+            var detailSummary = list([
+              "Severity: " + SEV_LABEL[f.sev] + " (" + f.sev + ")",
+              "Category: " + f.cat,
+              "Area: " + (area || "—"),
+              "Shift: " + (shift || "Day"),
+              "Keywords: " + (kw || "—"),
+            ]);
+            var detailHtml =
+              '<div class="row g-3">' +
+              '<div class="col-md-6"><b>Summary</b>' +
+              detailSummary +
+              "</div>" +
+              '<div class="col-md-6"><b>Excerpt</b><div class="small text-muted">' +
+              safeExcerpt +
+              "</div></div>" +
+              "</div>";
+
+            scanLog.unshift({
+              date: dateStr,
+              dtShift: dateStr + " / " + (shift || "Day"),
+              shift: shift || "Day",
+              area: area || "—",
+              sev: f.sev,
+              cat: f.cat,
+              kw: kw,
+              excerpt: String(text || "").slice(0, 200),
+              title: "PTO Detection — " + SEV_LABEL[f.sev] + " (" + f.cat + ")",
+              detail: detailHtml,
+            });
+          });
+        }
+
+        // ---------------- Wire UI ----------------
+        document.getElementById("formHseScan").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var fd = new FormData(e.target);
+          var dateStr = fd.get("date");
+          var area = fd.get("area");
+          var shift = fd.get("shift");
+          var text = fd.get("ptotext") || "";
+          $("#hseScanStatus").innerHTML = '<span class="pill bg-info text-white">Scanning...</span>';
+          processScan(text, dateStr, area, shift);
+          injectScanLog();
+          recomputeOverview();
+          $("#hseScanStatus").innerHTML = '<span class="pill bg-success text-white">Scanned</span>';
+          e.target.reset();
+        });
+        document.getElementById("btnHseSeed").addEventListener("click", seedSamples);
+        document.getElementById("btnHseExport").addEventListener("click", exportCSV);
+        document.getElementById("btnHseRecompute").addEventListener("click", recomputeOverview);
+
+        // Initial empty renders
+        injectScanLog();
+        recomputeOverview();
+      })();
+    </script>
+
+    <script>
+      /* ====================== HSE Dictionary Manager — Script ====================== */
+      /* No external dependencies beyond your existing helper "list()" for table cell rendering. */
+
+      (function () {
+        var LS_KEY = "hse_dict_v1";
+
+        // ---- Default starter (lightweight; your scanner still has full defaults) ----
+        var DEFAULT_CAT = {
+          "Machinery Guarding": ["guard missing", "unguarded", "pinch point", "nip point", "interlock"],
+          "Electrical / Lockout": ["lockout", "isolation", "live cable", "arc flash", "trailing cable"],
+          "Slip / Trip / Fall (STF)": ["spill", "housekeeping", "trip hazard", "uneven floor", "walkway"],
+        };
+        var DEFAULT_SEV = {
+          "Machinery Guarding": {
+            A: ["unguarded nip point with access"],
+            B: ["guard loose", "interlock defective"],
+            C: ["guard inspection due"],
+          },
+          "Electrical / Lockout": {
+            A: ["live cable exposed", "isolation missing", "arc flash exposure"],
+            B: ["panel open", "damaged trailing cable"],
+            C: ["awaiting isolation verification"],
+          },
+          "Slip / Trip / Fall (STF)": {
+            A: ["unprotected edge height"],
+            B: ["spill on uneven floor", "trip hazard hose"],
+            C: ["housekeeping ticket raised"],
+          },
+        };
+
+        // ---- State in memory ----
+        var CAT = {}; // category -> [keywords...]
+        var SEV = {}; // category -> {A:[],B:[],C:[]}
+
+        // ---- Helpers ----
+        function shallowClone(obj) {
+          return JSON.parse(JSON.stringify(obj || {}));
+        }
+        function setStatus(html) {
+          document.getElementById("hseDictStatus").innerHTML = html;
+        }
+        function pill(color, text) {
+          return '<span class="pill ' + color + ' text-white">' + text + "</span>";
+        }
+
+        function load() {
+          try {
+            var raw = localStorage.getItem(LS_KEY);
+            if (!raw) {
+              CAT = shallowClone(DEFAULT_CAT);
+              SEV = shallowClone(DEFAULT_SEV);
+              save();
+            } else {
+              var parsed = JSON.parse(raw);
+              CAT = shallowClone(parsed.CAT || {});
+              SEV = shallowClone(parsed.SEV || {});
+            }
+            publish(); // push to window.*
+            render();
+            setStatus(pill("bg-success", "Loaded"));
+          } catch (e) {
+            CAT = shallowClone(DEFAULT_CAT);
+            SEV = shallowClone(DEFAULT_SEV);
+            publish();
+            render();
+            setStatus(pill("bg-warning", "Reset (parse error)"));
+          }
+        }
+
+        function save() {
+          localStorage.setItem(LS_KEY, JSON.stringify({ CAT: CAT, SEV: SEV }));
+        }
+
+        // Expose to the rest of the app + fire event so scanners can refresh
+        function publish() {
+          window.HSE_CAT_KEYWORDS = shallowClone(CAT);
+          window.HSE_CATEGORY_SEV = shallowClone(SEV);
+          document.dispatchEvent(new CustomEvent("hse-dict-updated"));
+        }
+
+        function ensureCat(cat) {
+          if (!CAT[cat]) CAT[cat] = [];
+          if (!SEV[cat]) SEV[cat] = { A: [], B: [], C: [] };
+        }
+
+        function addOrUpdate(cat, sev, kws) {
+          ensureCat(cat);
+          // add to severity list
+          var listSev = SEV[cat][sev] || [];
+          kws.forEach(function (k) {
+            var t = k.trim().toLowerCase();
+            if (!t) return;
+            if (listSev.indexOf(t) === -1) listSev.push(t);
+            if (CAT[cat].indexOf(t) === -1) CAT[cat].push(t); // also contribute to matcher list
+          });
+          SEV[cat][sev] = listSev;
+        }
+
+        function removeCategory(cat) {
+          delete CAT[cat];
+          delete SEV[cat];
+        }
+
+        function render() {
+          var tb = document.getElementById("tblHseDict");
+          var cats = Object.keys(CAT).sort();
+          tb.innerHTML = cats
+            .map(function (cat) {
+              var sevA = SEV[cat] && SEV[cat].A ? SEV[cat].A.join(", ") : "";
+              var sevB = SEV[cat] && SEV[cat].B ? SEV[cat].B.join(", ") : "";
+              var sevC = SEV[cat] && SEV[cat].C ? SEV[cat].C.join(", ") : "";
+              var matchAll = (CAT[cat] || []).join(", ");
+              var btn =
+                '<button class="btn btn-sm btn-outline-danger" data-cat="' +
+                cat +
+                '" onclick="HSE_DICT_delCat(this)">Delete</button>';
+              return (
+                "<tr><td><b>" +
+                cat +
+                "</b></td><td>" +
+                sevA +
+                "</td><td>" +
+                sevB +
+                "</td><td>" +
+                sevC +
+                "</td><td>" +
+                matchAll +
+                "</td><td>" +
+                btn +
+                "</td></tr>"
+              );
+            })
+            .join("");
+        }
+
+        // ---- Wire form ----
+        document.getElementById("formHseDict").addEventListener("submit", function (e) {
+          e.preventDefault();
+          var fd = new FormData(e.target);
+          var sev = (fd.get("sev") || "C").toUpperCase();
+          var cat = (fd.get("cat") || "").trim();
+          var kw = fd.get("kw") || "";
+          if (!cat || !kw) {
+            setStatus(pill("bg-danger", "Provide category and keywords"));
+            return;
+          }
+          var kws = kw
+            .split(",")
+            .map(function (x) {
+              return x.trim().toLowerCase();
+            })
+            .filter(function (x) {
+              return !!x;
+            });
+
+          addOrUpdate(cat, sev, kws);
+          save();
+          publish();
+          render();
+          setStatus(pill("bg-success", "Saved"));
+          e.target.reset();
+        });
+
+        // Export JSON
+        document.getElementById("btnHseDictExport").addEventListener("click", function () {
+          var blob = new Blob([JSON.stringify({ CAT: CAT, SEV: SEV }, null, 2)], { type: "application/json" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "hse-dictionary.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        });
+
+        // Import JSON
+        document.getElementById("hseDictImport").addEventListener("change", function (ev) {
+          var f = ev.target.files && ev.target.files[0];
+          if (!f) return;
+          var reader = new FileReader();
+          reader.onload = function () {
+            try {
+              var obj = JSON.parse(String(reader.result || "{}"));
+              if (!obj || !obj.CAT || !obj.SEV) throw new Error("Invalid file");
+              CAT = shallowClone(obj.CAT);
+              SEV = shallowClone(obj.SEV);
+              save();
+              publish();
+              render();
+              setStatus(pill("bg-success", "Imported"));
+            } catch (e) {
+              setStatus(pill("bg-danger", "Import error"));
+            }
+          };
+          reader.readAsText(f);
+          ev.target.value = "";
+        });
+
+        // Reset
+        document.getElementById("btnHseDictReset").addEventListener("click", function () {
+          if (!confirm("Reset the HSE dictionary to defaults?")) return;
+          CAT = shallowClone(DEFAULT_CAT);
+          SEV = shallowClone(DEFAULT_SEV);
+          save();
+          publish();
+          render();
+          setStatus(pill("bg-warning", "Reset"));
+        });
+
+        // Expose a tiny delete handler
+        window.HSE_DICT_delCat = function (btn) {
+          var cat = btn.getAttribute("data-cat");
+          if (!cat) return;
+          if (!confirm('Delete category "' + cat + '"?')) return;
+          removeCategory(cat);
+          save();
+          publish();
+          render();
+          setStatus(pill("bg-warning", "Deleted"));
+        };
+
+        // Initial load
+        load();
+      })();
+    </script>
+  </body>
+</html>
