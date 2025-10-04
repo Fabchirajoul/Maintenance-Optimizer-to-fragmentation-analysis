@@ -1,0 +1,20 @@
+Pre-task review – 18L Stope 7 (Night).
+IMMEDIATE DANGER flagged; potential FATAL exposure.
+Unsupported roof and loose rock observed at the brow – FALL OF GROUND risk; rockbolt/mesh repairs required.
+WINCH rigging in progress: HOIST line with chain block + shackle; load not secured; overhead crane travel noted.
+VENTILATION low; oxygen (O2) dip on gas monitor; dust sample elevated near secondary fan – increase air quantity/air velocity.
+EXPLOSIVES: detonator and primer count mismatch after blast; possible MISFIRE – extend guarding blast area.
+ELECTRICAL: live cable seen at MCC; LOCKOUT / ISOLATION missing; arc flash label faded; trailing cable across walkway.
+MACHINERY GUARDING: guard missing at conveyor tail; unguarded NIP point (pinch point).
+SLIP/TRIP/FALL: housekeeping poor; oil SPILL on uneven floor; inadequate HANDRAIL at steps; trip hazard from hose.
+CONFINED SPACE entry discussed without permit – abort until permit and gas test in place.
+FIRE/HOT WORK ongoing; fire watch absent; EXTINGUISHER inspection overdue.
+GASES: H2S alarm tested; methane and CO trending; escalate if alarm repeats.
+NOISE/VIBRATION high near crusher (>85 dB(A)); hand-arm vibration warnings on grinder.
+ILLUMINATION below 150 LUX in crosscut; temporary LIGHTING installed.
+CHEMICALS: caustic reagent transfer; SDS/MSDS available; SPILL KIT staged.
+PPE NON-COMPLIANCE: two workers without goggles/respirator; one missing hard hat.
+VEHICLE / MOBILE EQUIPMENT: haul truck reversing through plant; traffic control/spotter required; reversing alarm intermittent.
+WATER / INUNDATION: sump overflow risk rising; dewatering pump tripped.
+HEAT STRESS: WBGT high; temperature elevated in raise.
+ERGONOMICS / MANUAL HANDLING: overexertion lifting 45 kg motor; request mechanical aid.
